@@ -56,7 +56,7 @@ LDLIBS += \
 	-lledscape \
 	-lpthread \
 	-lm \
-	-lgif \
+#	-lgif \
 
 COMPILE.c-o = $(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@ $< 
 COMPILE.cpp-o = $(CROSS_COMPILE)g++ $(CPPFLAGS) -c -o $@ $< 

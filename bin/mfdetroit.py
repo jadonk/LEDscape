@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-import alsaaudio
-import audioop
+#import alsaaudio
+#import audioop
 import Image, ImageFont, ImageDraw
 import socket
 import time
 import collections
 from colorsys import hsv_to_rgb
 
-inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK, '1')
+#inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK, '1')
+inp = 0
 if inp:
 	inp.setchannels(1)
 	inp.setrate(8000)
@@ -31,7 +32,9 @@ rainbowColors = [rainbow((i/180.0)*256.0) for i in range(0, 180)]
 
 box = (0, 0, 128, 128)
 im2 = Image.open("images/boris.png").resize((96, 96)).crop(box).offset(16,16)
+im3 = Image.open("images/i3.png").resize((96, 96)).crop(box).offset(16,16)
 
+image = 0
 angle = 0
 frame = 0
 samples = collections.deque(maxlen=128)
@@ -58,12 +61,15 @@ while True:
 		x = x + 1
 
 	draw.text((24, 0), "BeagleBoard.org", font=font_sm, fill=(222,114,36))
-	rotated = im2.rotate(angle)
+	if(image == 0):
+		rotated = im2.rotate(angle)
+	else:
+		rotated = im3.rotate(angle)
 	im = Image.composite(rotated, im, rotated)
 
-	if(frame > 360*2 and frame < 360*3):
+	if(frame > 360 and frame < 360+180):
 		angle = angle + 2
-		if(angle == 360):
+		if(angle >= 360):
 			angle = 0
 	else:
 		angle = 0
@@ -72,8 +78,12 @@ while True:
 	sock.sendto(data0, dest)
 
 	frame = frame + 1
-	if(frame >= 10000):
+	if(frame >= 1000):
 		frame = 0
+		if(image == 0):
+			image = 1
+		else:
+			image = 0
 
 	time.sleep(0.01)
 

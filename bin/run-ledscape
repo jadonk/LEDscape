@@ -1,8 +1,11 @@
 #!/bin/sh
 DIRNAME="`dirname "$0"`"
 cd "$DIRNAME/.."
+sleep 1
 
-config-pin overlay CAPE-BONE-OCTO
+#config-pin overlay CAPE-BONE-OCTO
+echo CAPE-BONE-OCTO > `ls /sys/devices/bone_capemgr.*/slots`
+sleep 10
 
 #exec ./bin/matrix-test >/dev/null
 exec ./bin/matrix-udp-rx >/dev/null

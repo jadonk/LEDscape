@@ -26,7 +26,9 @@
 #include <libavcodec/avcodec.h>
 #include <libavutil/mathematics.h>
 #else
+#ifdef LIBGIF
 #include <gif_lib.h>
+#endif
 #endif
 #include "util.h"
 #include "ledscape.h"
@@ -85,6 +87,7 @@ void demo_gif_update(
 	gif_avpkt.data += len;
 }
 #else
+#ifdef LIBGIF
 GifFileType * demo_gif_file = NULL;
 GifByteType * demo_gif_buf = NULL;
 int demo_gif_size = 0;
@@ -120,6 +123,7 @@ void demo_gif_update(
 		demo_gif_size = size;
 	}
 }
+#endif
 #endif
 
 static int
@@ -300,7 +304,9 @@ main(
 
 	demo_matrix_test_init();
 	demo_identify_init();
+#ifdef LIBGIF
 	demo_gif_init();
+#endif
 
 	display_startup_message(leds);
 	uint32_t * const fb = calloc(width*height,4);
@@ -348,9 +354,11 @@ main(
 			demo_identify_update(leds);
 			break;
 
+#ifdef LIBGIF
 		case 0x33:
 			demo_gif_update(leds, &buf[1], rlen-1);
 			break;
+#endif
 
 		default:
 			printf("bad type %d\n", mode);
