@@ -99,7 +99,7 @@ struct ledscape
 };
 
 
-#if 0
+#if 1
 /** Retrieve one of the two frame buffers. */
 ledscape_frame_t *
 ledscape_frame(
@@ -346,7 +346,7 @@ ledscape_init(
 
 	// Initiate the PRU program
 #ifdef CONFIG_LED_MATRIX
-	pru_exec(pru, "./matrix.bin");
+	pru_exec(pru, "./matrix-single.bin");
 #else
 	pru_exec(pru, "./ws281x.bin");
 #endif

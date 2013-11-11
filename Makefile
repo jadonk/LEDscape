@@ -13,7 +13,7 @@ TARGETS += opc-rx
 LEDSCAPE_OBJS = ledscape.o pru.o bitslice.o util.o
 LEDSCAPE_LIB := libledscape.a
 
-all: $(TARGETS) ws281x.bin matrix.bin
+all: $(TARGETS) ws281x.bin matrix.bin matrix-single.bin dts
 
 
 ifeq ($(shell uname -m),armv7l)
@@ -105,15 +105,15 @@ clean:
 # The correct way to reserve the GPIO pins on the BBB is with the
 # capemgr and a Device Tree file.  But it doesn't work.
 #
-SLOT_FILE=/sys/devices/bone_capemgr.8/slots
-dts: LEDscape.dts
-	@SLOT="`grep LEDSCAPE $(SLOT_FILE) | cut -d: -f1`"; \
+SLOT_FILE=$(shell ls /sys/devices/bone_capemgr.*/slots)
+dts: LEDscape-single.dts
+	@SLOT="`grep ledscape $(SLOT_FILE) | cut -d: -f1`"; \
 	if [ ! -z "$$SLOT" ]; then \
 		echo "Removing slot $$SLOT"; \
 		echo -$$SLOT > $(SLOT_FILE); \
 	fi
-	dtc -O dtb -o /lib/firmware/BB-LEDSCAPE-00A0.dtbo -b 0 -@ LEDscape.dts
-	echo BB-LEDSCAPE > $(SLOT_FILE)
+	dtc -O dtb -o /lib/firmware/ledscape-s-00A0.dtbo -b 0 -@ LEDscape-single.dts
+	echo ledscape-s > $(SLOT_FILE)
 
 
 ###########

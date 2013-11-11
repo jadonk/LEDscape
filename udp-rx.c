@@ -37,7 +37,7 @@ main(
 	if (bind(sock, (const struct sockaddr*) &addr, sizeof(addr)) < 0)
 		die("bind port %d failed: %s\n", port, strerror(errno));
 
-	ledscape_t * const leds = ledscape_init(num_pixels);
+	ledscape_t * const leds = ledscape_init(num_pixels,1);
 
 	unsigned frame_num = 0;
 
