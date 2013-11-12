@@ -30,7 +30,6 @@
  *
  * \todo: Find a way to unify this with the defines in the .p file
  */
-#if 0
 static const uint8_t gpios0[] = {
 	23, 27, 22, 10, 9, 8, 26, 11, 30, 31, 5, 3, 20, 4, 2, 14, 7
 };
@@ -46,19 +45,6 @@ static const uint8_t gpios2[] = {
 static const uint8_t gpios3[] = {
 	21, 19, 15, 14, 17, 16
 };
-#else
-static const uint8_t gpios0[] = {
-	23, 26
-};
-
-static const uint8_t gpios1[] = {
-	13, 15, 12, 14, 29, 28, 18
-};
-
-static const uint8_t gpios2[] = {
-	2, 5, 3, 4
-};
-#endif
 
 #define ARRAY_COUNT(a) ((sizeof(a) / sizeof(*a)))
 
@@ -91,7 +77,7 @@ typedef struct
 	uint32_t y_offset;
 } led_matrix_t;
 
-#define NUM_MATRIX 4
+#define NUM_MATRIX 16
 
 typedef struct
 {
@@ -281,7 +267,7 @@ ledscape_init(
 {
 	pru_t * const pru = pru_init(0);
 #ifdef CONFIG_LED_MATRIX
-	const size_t frame_size = height * width * 3;
+	const size_t frame_size = 16 * 8 * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
 #else
 	const size_t frame_size = 48 * width * 8 * 3;
 #endif
@@ -307,11 +293,25 @@ ledscape_init(
 
 #ifdef CONFIG_LED_MATRIX
 	*(leds->matrix) = (led_matrix_config_t) {
-		.matrix_width	= 32,
-		.matrix_height	= 2,
+		.matrix_width	= 128,
+		.matrix_height	= 8,
 		.matrix		= {
 			{ 0, 0 },
-			{ 0, 8 }
+			{ 0, 8 },
+			{ 0, 16 },
+			{ 0, 24 },
+			{ 0, 32 },
+			{ 0, 40 },
+			{ 0, 48 },
+			{ 0, 56 },
+			{ 128, 0 },
+			{ 128, 8 },
+			{ 128, 16 },
+			{ 128, 24 },
+			{ 128, 32 },
+			{ 128, 40 },
+			{ 128, 48 },
+			{ 128, 56 },
 		},
 	};
 
@@ -334,7 +334,6 @@ ledscape_init(
 	printf("%d\n", leds->ws281x->num_pixels);
 
 
-#if 0
 	// Configure all of our output pins.
 	for (unsigned i = 0 ; i < ARRAY_COUNT(gpios0) ; i++)
 		pru_gpio(0, gpios0[i], 1, 0);
@@ -344,15 +343,10 @@ ledscape_init(
 		pru_gpio(2, gpios2[i], 1, 0);
 	for (unsigned i = 0 ; i < ARRAY_COUNT(gpios3) ; i++)
 		pru_gpio(3, gpios3[i], 1, 0);
-#endif
 
 	// Initiate the PRU program
 #ifdef CONFIG_LED_MATRIX
-#if 0
-	pru_exec(pru, "./matrix.bin");
-#else
 	pru_exec(pru, "./matrix-single.bin");
-#endif
 #else
 	pru_exec(pru, "./ws281x.bin");
 #endif
