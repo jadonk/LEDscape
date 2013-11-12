@@ -179,7 +179,8 @@ main(void)
 		else
 			gradient(p, width, height, 10, i++);
 		//ledscape_draw(leds, p);
-        ledscape_set_background(leds, 0x2f, 0x7f, 0x2f);
+        //ledscape_set_background(leds, 0x2f, 0x7f, 0x2f);
+        ledscape_mytest(leds);
 		usleep(20000);
 
 		// wait for the previous frame to finish;

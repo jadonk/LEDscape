@@ -236,7 +236,7 @@ NEW_ROW_LOOP:
 	SET GPIO(b##N##_gpio), b##N##_pin; \
 	skip_b##N: \
 
-            MOV r21.b1, 0x21
+            //MOV r21.b1, 0x21
 			OUTPUT_ROW(11, r20.b0, r20.b1, r20.b2)
 			OUTPUT_ROW(12, r20.b3, r21.b0, r21.b1)
             //SET GPIO(b12_gpio), b12_pin

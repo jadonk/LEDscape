@@ -363,3 +363,30 @@ ledscape_set_background(
     }
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr;
 }
+
+void
+ledscape_mytest(
+	ledscape_t * const leds
+)
+{
+    static int frame = 0;
+    static int brightness = 0xff;
+    static int increment = -10;
+    int i;
+	uint8_t * const out = leds->pru->ddr;
+    for(i = 0; i < 512; i++) {
+	    //out[i*3+0] = (i & 0x01) ? 0xff : 0;
+	    //out[i*3+1] = ((i & 0x01) || (i & 0x80)) ? 0xff : 0;
+	    //out[i*3+2] = ((i & 0x01) || (i & 0x40)) ? 0xff : 0;
+	    out[i*3+0] = (i == frame) ? brightness : 0;
+	    out[i*3+1] = 0xff-brightness;
+	    out[i*3+2] = (i == 512-frame) ? brightness : 0;
+    }
+    frame+=2;
+    if(frame==512) frame = 1;
+    if(frame>511) frame = 0;
+    brightness += increment;
+    if(brightness < 0xb0) { increment = 10; brightness = 0xb0; }
+    if(brightness > 0xff) { increment = -10; brightness = 0xff; }
+	leds->ws281x->pixels_dma = leds->pru->ddr_addr;
+}

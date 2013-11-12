@@ -94,4 +94,9 @@ ledscape_set_background(
 	uint8_t g,
 	uint8_t b
 );
+
+extern void
+ledscape_mytest(
+	ledscape_t * const leds
+);
 #endif
