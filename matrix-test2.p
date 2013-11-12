@@ -216,7 +216,7 @@ NEW_ROW_LOOP:
 			// Load the sixteen RGB outputs into
 			// consecutive registers, starting at pixel_data.
 			// This takes about 250 ns
-			LBBO pixel_data, data_addr, offset, 3*16
+			//LBBO pixel_data, data_addr, offset, 3*16
 
 			CLOCK_HI
 
@@ -236,8 +236,14 @@ NEW_ROW_LOOP:
 	SET GPIO(b##N##_gpio), b##N##_pin; \
 	skip_b##N: \
 
-			OUTPUT_ROW(11, r20.b0, r20.b1, r20.b2)
-			OUTPUT_ROW(12, r20.b3, r21.b0, r21.b1)
+            SET GPIO(r11_gpio), r11_pin
+            SET GPIO(r12_gpio), r12_pin
+            SET GPIO(b11_gpio), b11_pin
+            SET GPIO(b12_gpio), b12_pin
+            SET GPIO(g11_gpio), g11_pin
+            SET GPIO(g12_gpio), g12_pin
+			//OUTPUT_ROW(11, r20.b0, r20.b1, r20.b2)
+			//OUTPUT_ROW(12, r20.b3, r21.b0, r21.b1)
             //OUTPUT_ROW(21, r21.b2, r21.b3, r22.b0)
             //OUTPUT_ROW(22, r22.b1, r22.b2, r22.b3)
 

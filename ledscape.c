@@ -348,7 +348,7 @@ ledscape_init(
 
 	// Initiate the PRU program
 #ifdef CONFIG_LED_MATRIX
-	pru_exec(pru, "./matrix.bin");
+	pru_exec(pru, "./matrix-test2.bin");
 #else
 	pru_exec(pru, "./ws281x.bin");
 #endif
