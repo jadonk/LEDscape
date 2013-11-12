@@ -15,37 +15,6 @@
 #define CONFIG_LED_MATRIX
 
 
-/** GPIO pins used by the LEDscape.
- *
- * The device tree should handle this configuration for us, but it
- * seems horribly broken and won't configure these pins as outputs.
- * So instead we have to repeat them here as well.
- *
- * If these are changed, be sure to check the mappings in
- * ws281x.p!
- *
- * The RGB matrix uses a subset of these pins, although with
- * the HDMI disabled it might use quite a few more for the four
- * output version.
- *
- * \todo: Find a way to unify this with the defines in the .p file
- */
-static const uint8_t gpios0[] = {
-	23, 27, 22, 10, 9, 8, 26, 11, 30, 31, 5, 3, 20, 4, 2, 14, 7
-};
-
-static const uint8_t gpios1[] = {
-	13, 15, 12, 14, 29, 16, 17, 28, 18, 19,
-};
-
-static const uint8_t gpios2[] = {
-	2, 5, 22, 23, 14, 12, 10, 8, 6, 3, 4, 1, 24, 25, 17, 16, 15, 13, 11, 9, 7,
-};
-
-static const uint8_t gpios3[] = {
-	21, 19, 15, 14, 17, 16
-};
-
 #define ARRAY_COUNT(a) ((sizeof(a) / sizeof(*a)))
 
 
@@ -77,7 +46,7 @@ typedef struct
 	uint32_t y_offset;
 } led_matrix_t;
 
-#define NUM_MATRIX 16
+#define NUM_MATRIX 2
 
 typedef struct
 {
@@ -267,7 +236,7 @@ ledscape_init(
 {
 	pru_t * const pru = pru_init(0);
 #ifdef CONFIG_LED_MATRIX
-	const size_t frame_size = 16 * 8 * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
+	const size_t frame_size = height * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
 #else
 	const size_t frame_size = 48 * width * 8 * 3;
 #endif
@@ -293,31 +262,17 @@ ledscape_init(
 
 #ifdef CONFIG_LED_MATRIX
 	*(leds->matrix) = (led_matrix_config_t) {
-		.matrix_width	= 128,
+		.matrix_width	= 32,
 		.matrix_height	= 8,
 		.matrix		= {
 			{ 0, 0 },
 			{ 0, 8 },
-			{ 0, 16 },
-			{ 0, 24 },
-			{ 0, 32 },
-			{ 0, 40 },
-			{ 0, 48 },
-			{ 0, 56 },
-			{ 128, 0 },
-			{ 128, 8 },
-			{ 128, 16 },
-			{ 128, 24 },
-			{ 128, 32 },
-			{ 128, 40 },
-			{ 128, 48 },
-			{ 128, 56 },
 		},
 	};
 
 	*(leds->ws281x) = (ws281x_command_t) {
 		.pixels_dma	= 0, // will be set in draw routine
-		.num_pixels	= (leds->matrix->matrix_width * 3) * 16,
+		.num_pixels	= 192,
 		.command	= 0,
 		.response	= 0,
 	};
@@ -331,7 +286,7 @@ ledscape_init(
 	};
 #endif
 
-	printf("%d\n", leds->ws281x->num_pixels);
+	printf("num pixels: %d\n", leds->ws281x->num_pixels);
 
 
 #if 0
@@ -389,4 +344,22 @@ ledscape_set_color(
 	p->r = r;
 	p->g = g;
 	p->b = b;
+}
+
+void
+ledscape_set_background(
+	ledscape_t * const leds,
+	uint8_t r,
+	uint8_t g,
+	uint8_t b
+)
+{
+	uint8_t * const out = leds->pru->ddr;
+    int i;
+    for(i = 0; i < leds->ws281x->num_pixels*8; i += 3) {
+	    out[i+0] = r;
+	    out[i+1] = g;
+	    out[i+2] = b;
+    }
+	leds->ws281x->pixels_dma = leds->pru->ddr_addr;
 }

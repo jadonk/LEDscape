@@ -15,7 +15,7 @@
  * Changing this also requires changes in ws281x.p to stride the
  * correct number of bytes per row..
  */
-#define LEDSCAPE_NUM_STRIPS 32
+#define LEDSCAPE_NUM_STRIPS 2
 
 
 /** LEDscape pixel format is BRGA.
@@ -27,7 +27,7 @@ typedef struct {
 	uint8_t b;
 	uint8_t r;
 	uint8_t g;
-	uint8_t a;
+	//uint8_t a;
 } __attribute__((__packed__)) ledscape_pixel_t;
 
 
@@ -81,4 +81,17 @@ ledscape_close(
 	ledscape_t * const leds
 );
 
+extern ledscape_frame_t *
+ledscape_frame(
+	ledscape_t * const leds,
+	unsigned int frame
+);
+
+extern void
+ledscape_set_background(
+	ledscape_t * const leds,
+	uint8_t r,
+	uint8_t g,
+	uint8_t b
+);
 #endif
