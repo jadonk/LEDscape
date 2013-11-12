@@ -334,6 +334,7 @@ ledscape_init(
 	printf("%d\n", leds->ws281x->num_pixels);
 
 
+#if 0
 	// Configure all of our output pins.
 	for (unsigned i = 0 ; i < ARRAY_COUNT(gpios0) ; i++)
 		pru_gpio(0, gpios0[i], 1, 0);
@@ -343,10 +344,11 @@ ledscape_init(
 		pru_gpio(2, gpios2[i], 1, 0);
 	for (unsigned i = 0 ; i < ARRAY_COUNT(gpios3) ; i++)
 		pru_gpio(3, gpios3[i], 1, 0);
+#endif
 
 	// Initiate the PRU program
 #ifdef CONFIG_LED_MATRIX
-	pru_exec(pru, "./matrix-single.bin");
+	pru_exec(pru, "./matrix.bin");
 #else
 	pru_exec(pru, "./ws281x.bin");
 #endif

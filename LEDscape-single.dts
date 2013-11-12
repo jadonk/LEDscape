@@ -65,19 +65,19 @@
             pinctrl-0 = <&pruicss_ledscapes_pins>;
 	        led_strips {
                 pin-names     =
-			        "s:0",
-			        "s:1",
-			        "s:2",
-			        "s:3",
-			        "s:4",
-			        "s:5",
-			        "s:6",
-			        "s:7",
-			        "s:8",
-			        "s:9",
-			        "s:10",
-			        "s:11",
-			        "s:12";
+			        "ledscape:r1:2",
+			        "ledscape:b1:2",
+			        "ledscape:a_raw",
+			        "ledscape:b_raw",
+			        "ledscape:c_raw",
+			        "ledscape:d_raw",
+			        "ledscape:clk",
+			        "ledscape:latch",
+			        "ledscape:oe",
+			        "ledscape:r1:1",
+			        "ledscape:g1:1",
+			        "ledscape:g1:2",
+			        "ledscape:b1:1";
 
                 /* gpio0 --> gpio1 in DT */
                 gpios         = <

@@ -13,7 +13,7 @@ TARGETS += opc-rx
 LEDSCAPE_OBJS = ledscape.o pru.o bitslice.o util.o
 LEDSCAPE_LIB := libledscape.a
 
-all: $(TARGETS) ws281x.bin matrix.bin matrix-single.bin dts
+all: $(TARGETS) ws281x.bin matrix.bin matrix-single.bin
 
 
 ifeq ($(shell uname -m),armv7l)
@@ -107,9 +107,11 @@ clean:
 #
 SLOT_FILE=$(shell ls /sys/devices/bone_capemgr.*/slots)
 dts: LEDscape-single.dts
+	rmmod uio_pruss || true
+	#modprobe uio_pruss
 	@SLOT="`grep ledscape $(SLOT_FILE) | cut -d: -f1`"; \
 	if [ ! -z "$$SLOT" ]; then \
-		echo "Removing slot $$SLOT"; \
+		echo "Removing slot $$SLOT from $(SLOT_FILE)"; \
 		echo -$$SLOT > $(SLOT_FILE); \
 	fi
 	dtc -O dtb -o /lib/firmware/ledscape-s-00A0.dtbo -b 0 -@ LEDscape-single.dts

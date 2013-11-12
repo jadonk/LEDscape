@@ -238,6 +238,23 @@ NEW_ROW_LOOP:
 
 			OUTPUT_ROW(11, r20.b0, r20.b1, r20.b2)
 			OUTPUT_ROW(12, r20.b3, r21.b0, r21.b1)
+            //OUTPUT_ROW(21, r21.b2, r21.b3, r22.b0)
+            //OUTPUT_ROW(22, r22.b1, r22.b2, r22.b3)
+
+            //OUTPUT_ROW(31, r23.b0, r23.b1, r23.b2)
+            //OUTPUT_ROW(32, r23.b3, r24.b0, r24.b1)
+            //OUTPUT_ROW(41, r24.b2, r24.b3, r25.b0)
+            //OUTPUT_ROW(42, r25.b1, r25.b2, r25.b3)
+
+            //OUTPUT_ROW(51, r26.b0, r26.b1, r26.b2)
+            //OUTPUT_ROW(52, r26.b3, r27.b0, r27.b1)
+            //OUTPUT_ROW(61, r27.b2, r27.b3, r28.b0)
+            //OUTPUT_ROW(62, r28.b1, r28.b2, r28.b3)
+
+            //OUTPUT_ROW(71, r29.b0, r29.b1, r29.b2)
+            //OUTPUT_ROW(72, r29.b3, r30.b0, r30.b1)
+            //OUTPUT_ROW(81, r30.b2, r30.b3, r31.b0)
+            //OUTPUT_ROW(82, r31.b1, r31.b2, r31.b3)
 
 			// All bits are configured;
 			// the non-set ones will be cleared

@@ -1,6 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 DIRNAME="`dirname "$0"`"
 cd "$DIRNAME"
+SLOT_FILE=`ls /sys/devices/bone_capemgr.*/slots`
+SLOT=`grep ledscape $SLOT_FILE | cut -d: -f1`
+if [ -z "$SLOT" ]; then
+	echo ledscape-s > $SLOT_FILE
+    dmesg | tail
+fi
 
 modprobe uio_pruss
 exec ./matrix-test
