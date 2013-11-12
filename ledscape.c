@@ -146,7 +146,19 @@ ledscape_draw(
 	static unsigned frame = 0;
 	const uint32_t * const in = buffer;
 	uint8_t * const out = leds->pru->ddr + leds->frame_size * frame;
+    int i, j;
 
+#if 1
+    for(i = 0; i < 512; i++) {
+        j = ((i << 1) & (512 - 1)) + ((i & 256) ? 1 : 0);
+        out[j*3+0] = (in[i] >> 0) & 0xff;
+        out[j*3+1] = (in[i] >> 8) & 0xff;
+        out[j*3+2] = (in[i] >> 16) & 0xff;
+    }
+
+	leds->ws281x->pixels_dma = leds->pru->ddr_addr + leds->frame_size * frame;
+	//frame = (frame + 1) & 1;
+#else
 #ifdef CONFIG_LED_MATRIX
 	// matrix packed is:
 	// this way the PRU can read all sixteen output pixels in
@@ -175,7 +187,7 @@ ledscape_draw(
 		}
 	}
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr + leds->frame_size * frame;
-	frame = (frame + 1) & 1;
+	//frame = (frame + 1) & 1;
 #else
 	// Translate the RGBA frame into G R B, sliced by color
 	// only 48 outputs currently supported
@@ -205,6 +217,7 @@ ledscape_draw(
 
 	// Send the start command
 	leds->ws281x->command = 1;
+#endif
 #endif
 }
 
@@ -262,7 +275,7 @@ ledscape_init(
 
 #ifdef CONFIG_LED_MATRIX
 	*(leds->matrix) = (led_matrix_config_t) {
-		.matrix_width	= 32,
+		.matrix_width	= 16,
 		.matrix_height	= 8,
 		.matrix		= {
 			{ 0, 0 },
