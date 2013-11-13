@@ -98,8 +98,7 @@ rainbow(
 )
 {
 	const unsigned color = cycle % 180;
-	//const unsigned dim = 8;
-	const unsigned dim = 64;
+	const unsigned dim = 8;
 
 	for (unsigned x=0; x < width; x++) {
 		for (unsigned y=0; y < height; y++) {
@@ -107,12 +106,9 @@ rainbow(
                         const uint32_t in  = rainbowColors[index];
 			uint8_t * const out = &pixels[x + y*width];
 #if 1
-                        //out[0] = ((in >> 0) & 0xFF) * dim / 128; // * y / 16;
-                        //out[1] = ((in >> 8) & 0xFF) * dim / 128; // * y / 16;
-                        //out[2] = ((in >> 16) & 0xFF) * dim / 128; // * y / 16;
-                        out[0] = ((in >> 0) & 0xFF);
-                        out[1] = ((in >> 8) & 0xFF);
-                        out[2] = ((in >> 16) & 0xFF);
+                        out[0] = ((in >> 0) & 0xFF) * dim / 128; // * y / 16;
+                        out[1] = ((in >> 8) & 0xFF) * dim / 128; // * y / 16;
+                        out[2] = ((in >> 16) & 0xFF) * dim / 128; // * y / 16;
 #else
                         //out[0] = ((in >> 0) & 0xFF);
                         //out[1] = ((in >> 8) & 0xFF);
@@ -161,7 +157,8 @@ main(void)
 	const int height = 16;
 	ledscape_t * const leds = ledscape_init(width, height);
 	printf("init done\n");
-	time_t last_time = time(NULL);
+	time_t now = time(NULL);
+	time_t last_time = now;
 	unsigned last_i = 0;
 
 	// pre-compute the 180 rainbow colors
@@ -180,14 +177,13 @@ main(void)
 	while (1)
 	{
 		if (1)
-			rainbow(p, width, height, 10, i++);
+			rainbow(p, width, height, 10, i+=1);
 		else
 			gradient(p, width, height, 10, i++);
 		ledscape_draw(leds, p);
-        //ledscape_set_background(leds, 0x2f, 0x7f, 0x2f);
-        //ledscape_mytest(leds);
-		usleep(20000);
+		usleep(10000);
 
+#if 0
 		// wait for the previous frame to finish;
 		//const uint32_t response = ledscape_wait(leds);
 		const uint32_t response = 0;
@@ -199,6 +195,7 @@ main(void)
 			last_i = i;
 			last_time = now;
 		}
+#endif
 
 	}
 

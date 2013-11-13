@@ -93,7 +93,7 @@
 #define gpio3_base r19
 #define pixel_data r20 // the next 12 registers, too
 
-#define BRIGHT_STEP 16
+#define BRIGHT_STEP 2
 
 #define CLOCK_LO \
         SBBO clock_pin, gpio1_base, GPIO_SETDATAOUT, 4; \
