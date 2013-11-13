@@ -28,8 +28,8 @@ ledscape_fill_color(
 
 int main (void)
 {
-	const int num_pixels = 128;
-	ledscape_t * const leds = ledscape_init(num_pixels,1);
+	const int num_pixels = 32;
+	ledscape_t * const leds = ledscape_init(num_pixels,16);
 	time_t last_time = time(NULL);
 	unsigned last_i = 0;
 
@@ -47,9 +47,9 @@ int main (void)
 		uint16_t b = ((i >> 16) & 0xFF);
 		ledscape_fill_color(frame, num_pixels, val, val, val);
 
-		for (unsigned strip = 0 ; strip < 32 ; strip++)
+		for (unsigned strip = 0 ; strip < 2 ; strip++)
 		{
-			for (unsigned p = 0 ; p < 64 ; p++)
+			for (unsigned p = 0 ; p < 32 ; p++)
 			{
 				ledscape_set_color(
 					frame,

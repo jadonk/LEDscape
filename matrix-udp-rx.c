@@ -58,8 +58,8 @@ main(
 	if (sock < 0)
 		die("socket port %d failed: %s\n", port, strerror(errno));
 
-	const unsigned width = 256;
-	const unsigned height = 48;
+	const unsigned width = 32;
+	const unsigned height = 16;
 	const size_t image_size = width * height * 3;
 
 	// largest possible UDP packet

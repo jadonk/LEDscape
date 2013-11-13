@@ -15,8 +15,8 @@ dest = ("localhost", 9999)
 font = ImageFont.truetype("pf_tempesta_seven.ttf", 8)
 
 i = 0
-width = 256
-height = 64
+width = 32
+height = 16
 disp = Image.new("RGB", (width,height), "black")
 disp_draw = ImageDraw.Draw(disp)
 

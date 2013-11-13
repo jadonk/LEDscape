@@ -75,8 +75,8 @@ hsv2rgb(
 }
 
 
-static const int w = 256;
-static const int h = 64;
+static const int w = 32;
+static const int h = 16;
 
 // This will contain the pixels used to calculate the fire effect
 static uint8_t fire[256][64];

@@ -22,8 +22,8 @@ main(
 )
 {
 	int port = 9999;
-	int num_pixels = 256;
-	int num_strips = 32; // not necessarily LEDSCAPE_NUM_STRIPS
+	int num_pixels = 512;
+	int num_strips = 2; // not necessarily LEDSCAPE_NUM_STRIPS
 
 	const int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	struct sockaddr_in addr = {
@@ -37,7 +37,7 @@ main(
 	if (bind(sock, (const struct sockaddr*) &addr, sizeof(addr)) < 0)
 		die("bind port %d failed: %s\n", port, strerror(errno));
 
-	ledscape_t * const leds = ledscape_init(num_pixels,1);
+	ledscape_t * const leds = ledscape_init(32,16);
 
 	unsigned frame_num = 0;
 

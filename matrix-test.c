@@ -177,11 +177,11 @@ main(void)
 	while (1)
 	{
 		if (1)
-			rainbow(p, width, height, 10, i+=1);
+			rainbow(p, width, height, 10, i++);
 		else
 			gradient(p, width, height, 10, i++);
 		ledscape_draw(leds, p);
-		usleep(10000);
+		usleep(20000);
 
 #if 0
 		// wait for the previous frame to finish;
