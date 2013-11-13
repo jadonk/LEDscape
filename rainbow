@@ -13,8 +13,8 @@ my $sock = IO::Socket::INET->new(
 ) or die "Socket failed: $!\n";
 
 
-my $width = 64;
-my $height = 210;
+my $width = 32;
+my $height = 16;
 my $offset = 0;
 
 while (1)
@@ -28,8 +28,8 @@ while (1)
 		for(my $x = 0; $x < $width ; $x++)
 		{
 			my $r = (($x + $offset) % $width) * $bright / $width;
-			my $g = 0;
-			my $b = (($height - $y - 1 + $offset) % $height) * $bright / $height;
+            my $g = (($x + $offset - $y) % $width) * $bright / ($width * 2);
+			my $b = (($height - $y - 1 + $offset / 2) % $height) * $bright / ($height * 2);
 
 			$s .= chr($r);
 			$s .= chr($g);

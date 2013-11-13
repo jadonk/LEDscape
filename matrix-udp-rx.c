@@ -143,12 +143,14 @@ main(
 		last_report = stop_tv.tv_sec;
 
 		const unsigned delta_avg = delta_sum / frames;
+#if 0
 		printf("%6u usec avg, max %.2f fps, actual %.2f fps (over %u frames)\n",
 			delta_avg,
 			report_interval * 1.0e6 / delta_avg,
 			frames * 1.0 / report_interval,
 			frames
 		);
+#endif
 
 		frames = delta_sum = 0;
 	}

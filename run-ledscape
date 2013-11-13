@@ -9,4 +9,4 @@ if [ -z "$SLOT" ]; then
 fi
 
 modprobe uio_pruss
-exec ./matrix-test
+exec ./matrix-udp-rx

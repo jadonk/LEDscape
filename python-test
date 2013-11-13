@@ -36,14 +36,15 @@ while True:
 	t = now.strftime("%H:%M")
 
 	# Draw the date 
-	im_draw.text((0, -2), d, font=font, fill=rainbow(i))
+	#im_draw.text((0, -2), d, font=font, fill=rainbow(i))
+	im_draw.text((0, 0), d, font=font, fill=rainbow(i))
 
 	# Make it scroll
 	disp.paste(im.crop((0,0,i,height)), (width-i,0))
 	disp.paste(im.crop((i+1,0,256-1,height)), (0,0))
 
 	# draw the time on each face
-	disp_draw.text((4, 8-3), t, font=font_sm)
+	#disp_draw.text((4, 8-3), t, font=font_sm)
 
 	# Send it to the drawing server
 	sock.sendto(chr(1) + disp.tostring(), dest)

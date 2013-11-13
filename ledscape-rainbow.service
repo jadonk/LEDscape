@@ -1,0 +1,11 @@
+[Unit]
+Description=LEDscape rainbow test
+Requires=ledscape.service
+
+[Service]
+WorkingDirectory=/home/root/LEDscape/
+ExecStart=/home/root/LEDscape/rainbow
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
