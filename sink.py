@@ -20,6 +20,7 @@ debug = displays a cv window with each stage in it. Doesnt work on headless serv
 fromCam = use the camera as the image source, if False then load an image supplied by sys.argv[1]
 '''
 def main(debug=False, fromCam=False):
+ #while True:
   # threshold for canny edge detect
   thresh = 200 
   #min and max radius for the plughole
@@ -43,6 +44,8 @@ def main(debug=False, fromCam=False):
   im = None
   if fromCam == True:
     capture = cv.CaptureFromCAM(-1) #-1 will select the first camera available, usually /dev/video0 on linux
+    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH, 160)
+    cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
     im = cv.QueryFrame(capture)
   else:
     im = cv.LoadImage(sys.argv[1])
@@ -54,7 +57,7 @@ def main(debug=False, fromCam=False):
 	  alarm = alarms()
 	  alarm.stopAllAlarms()
 	  print "Stopping all alarms as its night time, alarms count will continue in the morning"
-	  exit()
+	  #exit()
 
   #create grayscale and edge storage
   gray = cv.CreateImage(cv.GetSize(im), cv.IPL_DEPTH_8U, 1)
@@ -151,11 +154,11 @@ def main(debug=False, fromCam=False):
   #if debugging then display each stage of the process in a cv windows. Useful when configuring things
   if debug: 
     cv.NamedWindow('Circles')
-    cv.ShowImage('Circles', im)
-    cv.WaitKey(0)
+    #cv.ShowImage('Circles', im)
+    #cv.WaitKey(0)
     cv.ShowImage('Circles', edges)
     cv.WaitKey(0)
 
 if __name__ == '__main__':
   #print change these options when fiddling
-  main(debug=False, fromCam=True)
+  main(debug=True, fromCam=True)
