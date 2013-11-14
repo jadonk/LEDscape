@@ -9,6 +9,7 @@ import time, datetime
 from colorsys import hsv_to_rgb
 import cv, cv2
 import numpy as np
+from random import randint
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dest = ("localhost", 9999)
@@ -28,6 +29,8 @@ capture = cv2.VideoCapture(-1)
 capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
 last_color = "Green"
+show_color = 0
+effect = 0
 
 def rainbow(i):
 	rgb = [int(x*256) for x in hsv_to_rgb((i%256)/256.0,0.8,0.8)]
@@ -47,6 +50,18 @@ def r_array(cycle):
 			index = int(color + x + y*10/4) % 180
 			im_pixels[x, y] = rainbowColors[index];
 
+spectrum = [randint(1,height) for i in range(0, width/2)]
+
+def spec_an(i):
+	im.paste((0,0,0), (0,0,width,height))
+	for x in range(0, width/2):
+		spectrum[x] = spectrum[x] + randint(-2,2)
+		if spectrum[x] >= height:
+			spectrum[x] = height
+		elif spectrum[x] <= 0:
+			spectrum[x] = 0
+		im_draw.line((x*2, height, x*2, spectrum[x]), fill=rainbow(i))
+
 def getColor():
 	(status, cam) = capture.read()
 	cvect = cv2.mean(cam)
@@ -64,16 +79,22 @@ def getColor():
 while True:
 	(cvect, color, cname) = getColor()
 	if cname != last_color:
-		i = 0
-		last_color = cname
-		#print cname
-	if i < 20:
+		show_color = 0
+	if show_color < 20:
+		show_color += 1
 		im.paste(rainbow(color), (0,0,width,height))
 		im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
 	else:
-		r_array(i*3)
+		if cname == "Red":
+			r_array(i*3)
+		elif cname == "Blue":
+			spec_an(i)
+			i += 1
+		else:
+			r_array(i*3)
+			i += 1
+	last_color = cname
 	sock.sendto(chr(1) + im.tostring(), dest)
-	i += 1
 	if i > 65536:
 		i = 0
 
