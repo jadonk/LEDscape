@@ -71,7 +71,7 @@ while True:
 		im.paste(rainbow(color), (0,0,width,height))
 		im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
 	else:
-		r_array(i)
+		r_array(i*3)
 	sock.sendto(chr(1) + im.tostring(), dest)
 	i += 1
 	if i > 65536:
