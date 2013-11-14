@@ -1,34 +1,70 @@
+#!/usr/bin/python
+# Draw images with PIL and send them to the display.
+# Dual scrolling example with fixed time on each side and
+# the date scrolling around.
+#
+import Image, ImageFont, ImageDraw
+import socket
+import time, datetime
+from colorsys import hsv_to_rgb
 import cv, cv2
 import numpy as np
 
-def main():
- capture = cv2.VideoCapture(-1)
- capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
- capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
- #cv2.namedWindow('Color')
- last_color = ""
- while True:
-  (status, im) = capture.read()
-  cvect = cv2.mean(im)
-  #if cvect[0] < 45:
-  if cvect[0] < 80:
-   color = "Red"
-  #elif cvect[0] < 90:
-  # color = "Orange"
-  #elif cvect[0] < 135:
-  # color = "Yellow"
-  elif cvect[0] < 180:
-   color = "Green"
-  else:
-  #elif cvect[0] < 225:
-   color = "Blue"
-  #else:
-  # color = "Violet"
-  if color is not last_color:
-   print color
-   last_color = color
-  #cv2.imshow('Color', im)
-  #cv2.waitKey(100)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+dest = ("localhost", 9999)
 
-if __name__ == '__main__':
-  main()
+#print im.format, im.size, im.mode
+# use a truetype font
+font = ImageFont.truetype("spincycle.ttf", 18)
+font_sm = ImageFont.truetype("pf_tempesta_seven.ttf", 8)
+
+i = 0
+width = 32
+height = 16
+disp = Image.new("RGB", (width,height), "black")
+im = Image.new("RGB", (256,height), "black")
+im_draw = ImageDraw.Draw(im)
+disp_draw = ImageDraw.Draw(disp)
+capture = cv2.VideoCapture(-1)
+capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
+capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
+
+def rainbow(i):
+	rgb = [int(x*256) for x in hsv_to_rgb(i/256.0,0.8,0.8)]
+	return (rgb[0],rgb[1],rgb[2])
+
+def getColor():
+	(status, im) = capture.read()
+	cvect = cv2.mean(im)
+	if cvect[0] < 80:
+		color = "Red"
+	elif cvect[0] < 180:
+		color = "Green"
+	else:
+		color = "Blue"
+	return (cvect, color)
+
+while True:
+	im.paste("black", (0,0,width,height))
+	now = datetime.datetime.now()
+	d = now.strftime("%a %d %b %Y")
+	t = now.strftime("%H:%M")
+
+	# Draw the date 
+	#im_draw.text((0, -2), d, font=font, fill=rainbow(i))
+	im_draw.text((0, 0), d, font=font, fill=rainbow(i))
+
+	# Make it scroll
+	disp.paste(im.crop((0,0,i,height)), (width-i,0))
+	disp.paste(im.crop((i+1,0,256-1,height)), (0,0))
+
+	# draw the time on each face
+	#disp_draw.text((4, 8-3), t, font=font_sm)
+
+	# Send it to the drawing server
+	sock.sendto(chr(1) + disp.tostring(), dest)
+	i += 1
+	if i > 256:
+		i = -32
+	time.sleep(0.05)
+
