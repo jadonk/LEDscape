@@ -19,13 +19,10 @@ font = ImageFont.truetype("spincycle.ttf", 18)
 font_sm = ImageFont.truetype("pf_tempesta_seven.ttf", 8)
 
 i = 0
-twidth = 128
 width = 32
 height = 16
-disp = Image.new("RGB", (width,height), "black")
-im = Image.new("RGB", (twidth,height), "black")
+im = Image.new("RGB", (width,height), "black")
 im_draw = ImageDraw.Draw(im)
-disp_draw = ImageDraw.Draw(disp)
 capture = cv2.VideoCapture(-1)
 capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
@@ -42,30 +39,22 @@ def getColor():
 	(status, cam) = capture.read()
 	cvect = cv2.mean(cam)
 	if cvect[0] < 80:
-		color = 10 # "Red"
+		color = 10
+		cname = "Red"
 	elif cvect[0] < 170:
-		color = 90 # "Green"
+		color = 90
+		cname = "Green"
 	else:
-		color = 150 # "Blue"
-	return (cvect, color)
+		color = 150
+		cname = "Blue"
+	return (cvect, color, cname)
 
 while True:
-	(cvect, color) = getColor()
-	im.paste(dark_rainbow(color), (0,0,twidth,height))
-	now = datetime.datetime.now()
-	d = now.strftime("%a %d %b %Y")
-	t = now.strftime("%H:%M")
-
-	# Draw the date 
-	im_draw.text((0, 0), d, font=font, fill=rainbow(i))
-
-	# Make it scroll
-	disp.paste(im.crop((0,0,i,height)), (width-i,0))
-	disp.paste(im.crop((i+1,0,twidth-1,height)), (0,0))
-
-	# Send it to the drawing server
-	sock.sendto(chr(1) + disp.tostring(), dest)
+	(cvect, color, cname) = getColor()
+	im.paste(dark_rainbow(color), (0,0,width,height))
+	im_draw.text((2, 0), cname, font=font_sm, fill=rainbow(i))
+	sock.sendto(chr(1) + im.tostring(), dest)
 	i += 1
-	if i > twidth:
-		i = -32
+	if i > 256:
+		i = 0
 
