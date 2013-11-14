@@ -26,9 +26,16 @@ im_draw = ImageDraw.Draw(im)
 capture = cv2.VideoCapture(-1)
 capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
+last_color = "Green"
 
 def rainbow(i):
 	rgb = [int(x*256) for x in hsv_to_rgb(i/256.0,0.8,0.8)]
+	return (rgb[0],rgb[1],rgb[2])
+
+def myfill(i):
+	if i < 100:
+		return (0, 0, 0)
+	rgb = [int(x*256) for x in hsv_to_rgb((i%256)/256.0,0.8,0.8)]
 	return (rgb[0],rgb[1],rgb[2])
 
 def getColor():
@@ -47,10 +54,14 @@ def getColor():
 
 while True:
 	(cvect, color, cname) = getColor()
+	if cname != last_color:
+		i = 0
+		last_color = cname
+		#print cname
 	im.paste(rainbow(color), (0,0,width,height))
-	im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
+	im_draw.text((2, 0), cname, font=font_sm, fill=myfill(i))
 	sock.sendto(chr(1) + im.tostring(), dest)
 	i += 1
-	if i > 256:
+	if i > 65536:
 		i = 0
 
