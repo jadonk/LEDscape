@@ -28,11 +28,7 @@ capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
 
 def rainbow(i):
-	rgb = [int(x*256) for x in hsv_to_rgb(i/256.0,0.8,0.9)]
-	return (rgb[0],rgb[1],rgb[2])
-
-def dark_rainbow(i):
-	rgb = [int(x*256) for x in hsv_to_rgb(i/256.0,0.8,0.1)]
+	rgb = [int(x*256) for x in hsv_to_rgb(i/256.0,0.8,0.8)]
 	return (rgb[0],rgb[1],rgb[2])
 
 def getColor():
@@ -51,8 +47,8 @@ def getColor():
 
 while True:
 	(cvect, color, cname) = getColor()
-	im.paste(dark_rainbow(color), (0,0,width,height))
-	im_draw.text((2, 0), cname, font=font_sm, fill=rainbow(i))
+	im.paste(rainbow(color), (0,0,width,height))
+	im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
 	sock.sendto(chr(1) + im.tostring(), dest)
 	i += 1
 	if i > 256:
