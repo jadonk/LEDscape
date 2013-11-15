@@ -25,7 +25,12 @@ height = 16
 im = Image.new("RGB", (width,height), "black")
 im_draw = ImageDraw.Draw(im)
 im_pixels = im.load()
+bone = Image.open("bone.png")
 capture = cv2.VideoCapture(-1)
+co = capture.isOpened()
+while not co:
+	capture = cv2.VideoCapture(-1)
+	co = capture.isOpened()
 capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
 last_color = "Green"
@@ -86,7 +91,7 @@ while True:
 		im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
 	else:
 		if cname == "Red":
-			r_array(i*3)
+			im.paste(bone, (0,0,width,height))
 		elif cname == "Blue":
 			spec_an(i)
 			i += 1
