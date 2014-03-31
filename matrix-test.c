@@ -153,7 +153,7 @@ gradient(
 int
 main(void)
 {
-	const int width = 32;
+	const int width = 32*5;
 	const int height = 16;
 	ledscape_t * const leds = ledscape_init(width, height);
 	printf("init done\n");

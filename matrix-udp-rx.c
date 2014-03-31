@@ -58,7 +58,7 @@ main(
 	if (sock < 0)
 		die("socket port %d failed: %s\n", port, strerror(errno));
 
-	const unsigned width = 32;
+	const unsigned width = 32*5;
 	const unsigned height = 16;
 	const size_t image_size = width * height * 3;
 

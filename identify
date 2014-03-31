@@ -25,15 +25,19 @@ def rainbow(i):
 	return (rgb[0],rgb[1],rgb[2])
 
 
-while True:
+#while True:
+def do_identify():
 	disp.paste("black", (0,0,width,height))
 
 	for x in range(0,width, 32):
 		for y in range(0,height, 16):
 			s = str(x) + "," + str(y)
-			disp_draw.text((x+2, y), s, font=font, fill=rainbow(i))
+			#disp_draw.text((x+2, y), s, font=font, fill=rainbow(i))
+			disp_draw.text((x+2, y), s, font=font, fill=(255,255,255))
 
 	# Send it to the drawing server
 	sock.sendto(chr(1) + disp.tostring(), dest)
-	i = (i+1) % width
-	time.sleep(0.025)
+	#i = (i+1) % width
+	#time.sleep(0.025)
+
+do_identify()

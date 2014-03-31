@@ -146,15 +146,25 @@ ledscape_draw(
 	static unsigned frame = 0;
 	const uint32_t * const in = buffer;
 	uint8_t * const out = leds->pru->ddr + leds->frame_size * frame;
-    int i, j;
+    int i, j, k;
 
 #if 1
-    for(i = 0; i < 512; i++) {
-        j = ((i << 1) & (512 - 1)) + ((i & 256) ? 1 : 0);
-        out[j*3+0] = (in[i] >> 0) & 0xff;
-        out[j*3+1] = (in[i] >> 8) & 0xff;
-        out[j*3+2] = (in[i] >> 16) & 0xff;
-    }
+#if 0
+	for(j = 0; j < 512*5*3; j++) {
+		out[j] = 0;
+	}
+	out[3] = 0xff;
+	out[512*5*3-5] = 0xff;
+	out[512*5*3-1] = 0xff;
+#else
+	for(i = 0; i < 512*5; i++) {
+		j = (i * 2) % (512*5);
+		if(i >= 256*5) j++;
+		out[j*3+0] = (in[i] >> 0) & 0xff;
+		out[j*3+1] = (in[i] >> 8) & 0xff;
+		out[j*3+2] = (in[i] >> 16) & 0xff;
+	}
+#endif
 
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr + leds->frame_size * frame;
 	//frame = (frame + 1) & 1;
@@ -249,7 +259,8 @@ ledscape_init(
 {
 	pru_t * const pru = pru_init(0);
 #ifdef CONFIG_LED_MATRIX
-	const size_t frame_size = height * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
+	const size_t frame_size = 16 * 8 * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
+	//const size_t frame_size = height * width * 3; //LEDSCAPE_NUM_STRIPS * 4;
 #else
 	const size_t frame_size = 48 * width * 8 * 3;
 #endif
@@ -275,7 +286,7 @@ ledscape_init(
 
 #ifdef CONFIG_LED_MATRIX
 	*(leds->matrix) = (led_matrix_config_t) {
-		.matrix_width	= 16,
+		.matrix_width	= 16 * 5,
 		.matrix_height	= 8,
 		.matrix		= {
 			{ 0, 0 },
@@ -285,7 +296,13 @@ ledscape_init(
 
 	*(leds->ws281x) = (ws281x_command_t) {
 		.pixels_dma	= 0, // will be set in draw routine
-		.num_pixels	= 192,
+		//.num_pixels	= 192,
+		//.num_pixels	= width * height,
+		//.num_pixels	= 16 * 8 * 3 * 5,
+		//.num_pixels	= 16 * 8 * 5,
+		//.num_pixels	= (leds->matrix->matrix_width * 3) * 16,
+		//.num_pixels	= (leds->matrix->matrix_width * 3) * 8,
+		.num_pixels	= 192 * 5,
 		.command	= 0,
 		.response	= 0,
 	};
@@ -317,6 +334,7 @@ ledscape_init(
 	// Initiate the PRU program
 #ifdef CONFIG_LED_MATRIX
 	pru_exec(pru, "./matrix-single.bin");
+	//pru_exec(pru, "./matrix.bin");
 #else
 	pru_exec(pru, "./ws281x.bin");
 #endif
