@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Draw images with PIL and send them to the display.
-# Dual scrolling example with fixed time on each side and
-# the date scrolling around.
+#
+# Video of this code running: https://vine.co/v/htzHbDziV2Q
 #
 import Image, ImageFont, ImageDraw
 import socket
