@@ -13,8 +13,8 @@ my $sock = IO::Socket::INET->new(
 ) or die "Socket failed: $!\n";
 
 
-my $width = 64;
-my $height = 210;
+my $width = 32*5;
+my $height = 16;
 my $offset = 0;
 
 my $i = 0;

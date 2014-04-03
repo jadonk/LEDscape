@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Draw images with PIL and send them to the display.
-#
-# Video of this code running: https://vine.co/v/htzHbDziV2Q
+# Dual scrolling example with fixed time on each side and
+# the date scrolling around.
 #
 import Image, ImageFont, ImageDraw
 import socket
@@ -22,15 +22,11 @@ font_sm = ImageFont.truetype("pf_tempesta_seven.ttf", 8)
 i = 0
 width = 32*5
 height = 16
-im = Image.new("RGB", (width,height), "black")
+im = Image.new("RGB", (width,height), "white")
 im_draw = ImageDraw.Draw(im)
 im_pixels = im.load()
 bone = Image.open("bone.png")
 capture = cv2.VideoCapture(-1)
-co = capture.isOpened()
-while not co:
-	capture = cv2.VideoCapture(-1)
-	co = capture.isOpened()
 capture.set(cv.CV_CAP_PROP_FRAME_WIDTH, 160)
 capture.set(cv.CV_CAP_PROP_FRAME_HEIGHT, 100)
 last_color = "Green"
@@ -81,25 +77,5 @@ def getColor():
 		cname = "Blue"
 	return (cvect, color, cname)
 
-while True:
-	(cvect, color, cname) = getColor()
-	if cname != last_color:
-		show_color = 0
-	if show_color < 20:
-		show_color += 1
-		im.paste(rainbow(color), (0,0,width,height))
-		im_draw.text((2, 0), cname, font=font_sm, fill=(0,0,0))
-	else:
-		if cname == "Red":
-			im.paste(bone, (0,0,width,height))
-		elif cname == "Blue":
-			spec_an(i)
-			i += 1
-		else:
-			r_array(i*3)
-			i += 1
-	last_color = cname
-	sock.sendto(chr(1) + im.tostring(), dest)
-	if i > 65536:
-		i = 0
+sock.sendto(chr(1) + im.tostring(), dest)
 

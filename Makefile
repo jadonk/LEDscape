@@ -4,6 +4,7 @@
 #
 TARGETS += teensy-udp-rx
 TARGETS += matrix-test
+TARGETS += matrix-test2
 TARGETS += fire
 TARGETS += matrix-udp-rx
 TARGETS += opc-rx

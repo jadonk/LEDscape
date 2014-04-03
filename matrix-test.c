@@ -188,7 +188,7 @@ gradient(
 int
 main(void)
 {
-	const int width = 32;
+	const int width = 32*5;
 	const int height = 16;
 	const int led_width = 32;
 	const int led_height = 16;
