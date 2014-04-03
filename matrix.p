@@ -16,6 +16,17 @@
  * To pause the redraw loop, write a NULL to the buffer pointer.
  * To shut down the PRU, write -1 to the buffer pointer.
  */
+#if 1
+#define MATRIX_HEIGHT 8		// 32x16 matrices
+#else
+#define MATRIX_HEIGHT 16	// 32x32 matrices
+#endif
+
+// higher constants == brighter.
+// 4 is a ok brightness, 5 is bright, 6 is powerful
+#define BRIGHT_SHIFT 5
+
+
 #define r11_gpio 2
 #define r11_pin 2
 #define g11_gpio 2
@@ -65,8 +76,13 @@
 #define b41_gpio 1
 #define b41_pin 17
 
-#define r42_gpio 3
+#if 0
+#define r42_gpio 1 // if we want to use PRU r30 output on clock
+#define r42_pin 19
+#else
+#define r42_gpio 3 // if we use the boards as built
 #define r42_pin 21
+#endif
 #define g42_gpio 3
 #define g42_pin 19
 #define b42_gpio 0
@@ -184,20 +200,26 @@
 #define gpio1_led_mask r11
 #define gpio2_led_mask r13
 #define gpio3_led_mask r14
-#define clock_pin r15
+#define bright_thresh r15
+
+// the gpio2/3_base registers must be re-written after every
+// read loop since the data is loaded into the 12 registers starting at r18
+// don't overwrite r30/r31!
 #define gpio0_base r16
 #define gpio1_base r17
 #define gpio2_base r18
 #define gpio3_base r19
-#define pixel_data r20 // the next 12 registers, too
-
-#define BRIGHT_STEP 16
+#define pixel_data r18 // the next 12 registers, too; 
 
 #define CLOCK_LO \
-        SBBO clock_pin, gpio1_base, GPIO_SETDATAOUT, 4; \
+	MOV out_clr, 1 << gpio1_clock; \
+	SBBO out_clr, gpio1_base, GPIO_SETDATAOUT, 4; \
+	//CLR r30,7
 
 #define CLOCK_HI \
-        SBBO clock_pin, gpio1_base, GPIO_CLRDATAOUT, 4; \
+	MOV out_clr, 1 << gpio1_clock; \
+	SBBO out_clr, gpio1_base, GPIO_CLRDATAOUT, 4; \
+	//SET r30,7
 
 #define LATCH_HI \
 	MOV out_set, 1 << gpio1_latch; \
@@ -315,7 +337,7 @@ START:
 	SET GPIO_MASK(g82_gpio), g82_pin
 	SET GPIO_MASK(b82_gpio), b82_pin
 
-        MOV clock_pin, 1 << gpio1_clock
+        //MOV clock_pin, 1 << gpio1_clock
 
 READ_LOOP:
         // Load the pointer to the buffer from PRU DRAM into r0 and the
@@ -350,7 +372,8 @@ NEW_ROW_LOOP:
 		XOR out_clr, out_clr, out_set // complement the bits into clr
 		SBBO out_clr, gpio1_base, GPIO_CLRDATAOUT, 8 // set both
 
-		MOV bright, 0x100
+		MOV bright, 7
+		MOV bright_thresh, 255
 	ROW_LOOP:
 		// Re-start reading at the same row
 		MOV offset, 0
@@ -365,6 +388,7 @@ NEW_ROW_LOOP:
 			// This takes about 250 ns
 			LBBO pixel_data, data_addr, offset, 3*16
 
+			// toggle the clock
 			CLOCK_HI
 
 			MOV gpio0_set, 0
@@ -373,35 +397,41 @@ NEW_ROW_LOOP:
 			MOV gpio3_set, 0
 #define GPIO(R) CAT3(gpio,R,_set)
 #define OUTPUT_ROW(N,reg_r,reg_g,reg_b) \
-	QBGE skip_r##N, reg_r, bright; \
+	QBBC skip_r##N, reg_r, bright; \
 	SET GPIO(r##N##_gpio), r##N##_pin; \
 	skip_r##N: \
-	QBGE skip_g##N, reg_g, bright; \
+	QBBC skip_g##N, reg_g, bright; \
 	SET GPIO(g##N##_gpio), g##N##_pin; \
 	skip_g##N: \
-	QBGE skip_b##N, reg_b, bright; \
+	QBBC skip_b##N, reg_b, bright; \
 	SET GPIO(b##N##_gpio), b##N##_pin; \
 	skip_b##N: \
 
-			OUTPUT_ROW(11, r20.b0, r20.b1, r20.b2)
-			OUTPUT_ROW(12, r20.b3, r21.b0, r21.b1)
-			OUTPUT_ROW(21, r21.b2, r21.b3, r22.b0)
-			OUTPUT_ROW(22, r22.b1, r22.b2, r22.b3)
+			OUTPUT_ROW(11, r18.b0, r18.b1, r18.b2)
+			OUTPUT_ROW(12, r18.b3, r19.b0, r19.b1)
 
-			OUTPUT_ROW(31, r23.b0, r23.b1, r23.b2)
-			OUTPUT_ROW(32, r23.b3, r24.b0, r24.b1)
-			OUTPUT_ROW(41, r24.b2, r24.b3, r25.b0)
-			OUTPUT_ROW(42, r25.b1, r25.b2, r25.b3)
+			OUTPUT_ROW(21, r19.b2, r19.b3, r20.b0)
+			OUTPUT_ROW(22, r20.b1, r20.b2, r20.b3)
 
-			OUTPUT_ROW(51, r26.b0, r26.b1, r26.b2)
-			OUTPUT_ROW(52, r26.b3, r27.b0, r27.b1)
-			OUTPUT_ROW(61, r27.b2, r27.b3, r28.b0)
-			OUTPUT_ROW(62, r28.b1, r28.b2, r28.b3)
+			OUTPUT_ROW(31, r21.b0, r21.b1, r21.b2)
+			OUTPUT_ROW(32, r21.b3, r22.b0, r22.b1)
+			OUTPUT_ROW(41, r22.b2, r22.b3, r23.b0)
+			OUTPUT_ROW(42, r23.b1, r23.b2, r23.b3)
 
-			OUTPUT_ROW(71, r29.b0, r29.b1, r29.b2)
-			OUTPUT_ROW(72, r29.b3, r30.b0, r30.b1)
-			OUTPUT_ROW(81, r30.b2, r30.b3, r31.b0)
-			OUTPUT_ROW(82, r31.b1, r31.b2, r31.b3)
+			OUTPUT_ROW(51, r24.b0, r24.b1, r24.b2)
+			OUTPUT_ROW(52, r24.b3, r25.b0, r25.b1)
+			OUTPUT_ROW(61, r25.b2, r25.b3, r26.b0)
+			OUTPUT_ROW(62, r26.b1, r26.b2, r26.b3)
+
+			OUTPUT_ROW(71, r27.b0, r27.b1, r27.b2)
+			OUTPUT_ROW(72, r27.b3, r28.b0, r28.b1)
+			OUTPUT_ROW(81, r28.b2, r28.b3, r29.b0)
+			OUTPUT_ROW(82, r29.b1, r29.b2, r29.b3)
+
+			// reload the gpio*_base registers
+			// since we have overwritten them with our pixel data
+			MOV gpio2_base, GPIO2
+			MOV gpio3_base, GPIO3
 
 			// All bits are configured;
 			// the non-set ones will be cleared
@@ -425,20 +455,25 @@ NEW_ROW_LOOP:
 			XOR out_clr, out_set, gpio3_led_mask
 			SBBO out_clr, gpio3_base, GPIO_CLRDATAOUT, 8
 
-			CLOCK_LO
-
 #if 1
 			// If the brightness is less than the pixel, turn off
 			// but keep in mind that this is the brightness of
 			// the previous row, not this one.
-			LSR out_set, offset, 0
-			ADD out_clr, bright, 10
-			LSL out_clr, out_clr, 4
+			LSL out_set, offset, 0
+			//LSL out_clr, 1, bright
+			//LSL out_clr, out_clr, 1
+			//MOV out_clr, 2048
 
-			QBLT no_blank, out_clr, out_set
+			LSL out_clr, bright_thresh, BRIGHT_SHIFT
+			//LSL out_clr, bright_thresh, 10
+
+			//QBBS no_blank, out_set, bright
+			QBGT no_blank, out_set, out_clr
 			DISPLAY_OFF
 			no_blank:
 #endif
+
+			CLOCK_LO
 
 			ADD offset, offset, 3*16
 			QBNE PIXEL_LOOP, offset, width
@@ -448,7 +483,8 @@ NEW_ROW_LOOP:
 		DISPLAY_ON
 
 		// Update the brightness, and then give the row another scan
-		SUB bright, bright, BRIGHT_STEP
+		SUB bright, bright, 1
+		LSR bright_thresh, bright_thresh, 1
 		QBLT ROW_LOOP, bright, 0
 
 		// We have just done all eight brightness levels for this
@@ -458,7 +494,7 @@ NEW_ROW_LOOP:
 		ADD data_addr, data_addr, offset
 
                 ADD row, row, 1
-                QBEQ READ_LOOP, row, 8
+                QBEQ READ_LOOP, row, MATRIX_HEIGHT
 
 		QBA NEW_ROW_LOOP
 	

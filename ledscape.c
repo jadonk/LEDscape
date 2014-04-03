@@ -15,6 +15,37 @@
 #define CONFIG_LED_MATRIX
 
 
+/** GPIO pins used by the LEDscape.
+ *
+ * The device tree should handle this configuration for us, but it
+ * seems horribly broken and won't configure these pins as outputs.
+ * So instead we have to repeat them here as well.
+ *
+ * If these are changed, be sure to check the mappings in
+ * ws281x.p!
+ *
+ * The RGB matrix uses a subset of these pins, although with
+ * the HDMI disabled it might use quite a few more for the four
+ * output version.
+ *
+ * \todo: Find a way to unify this with the defines in the .p file
+ */
+static const uint8_t gpios0[] = {
+	23, 27, 22, 10, 9, 8, 26, 11, 30, 31, 5, 3, 20, 4, 2, 14, 7, 15
+};
+
+static const uint8_t gpios1[] = {
+	13, 15, 12, 14, 29, 16, 17, 28, 18, 19,
+};
+
+static const uint8_t gpios2[] = {
+	2, 5, 22, 23, 14, 12, 10, 8, 6, 3, 4, 1, 24, 25, 17, 16, 15, 13, 11, 9, 7,
+};
+
+static const uint8_t gpios3[] = {
+	21, 19, 15, 14, 17, 16
+};
+
 #define ARRAY_COUNT(a) ((sizeof(a) / sizeof(*a)))
 
 
@@ -403,3 +434,76 @@ ledscape_mytest(
     if(brightness > 0xff) { increment = -10; brightness = 0xff; }
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr;
 }
+
+/** Copy a 16x32 region from in to a 32x16 region of out.
+ * If rot == 0, rotate -90, else rotate +90.
+ */
+static void
+framebuffer_copy(
+	uint32_t * const out,
+	const uint32_t * const in,
+	const int rot,
+	const int leds_width,
+	const int width
+)
+{
+	for (int x = 0 ; x < 16 ; x++)
+	{
+		for (int y = 0 ; y < 32 ; y++)
+		{
+			int ox, oy;
+			if (rot)
+			{
+				// rotate +90 (0,0) => (0,15)
+				ox = y;
+				oy = 15 - x;
+			} else {
+				// rotate -90 (0,0) => (31,0)
+				ox = 31 - y;
+				oy = x;
+			}
+
+			out[ox + leds_width*oy] = in[x + width*y];
+		}
+	}
+}
+
+
+/** With the panels mounted vertically, adjust the mapping.
+ * Even panels are rotated -90, odd ones +90.
+ * Input framebuffer is 256x32
+ * Output framebuffer is 128x64 (actually x128, but we are not using the
+ * other half of it).
+ */
+void
+framebuffer_flip(
+	uint32_t * const out,
+	const uint32_t * const in,
+	const int leds_width,
+	const int leds_height,
+	const int width,
+	const int height
+)
+{
+	(void) height;
+
+	for (int x = 0, rot=0 ; x < width ; x += 16, rot = !rot)
+	{
+		int ox = (x*2) % leds_width;
+		int oy = (((x*2)) / leds_width) * 16;
+
+		// if we are more than half-way past the width,
+		// flip the axis
+		const uint32_t * p = &in[x];
+
+		framebuffer_copy(
+			&out[ox + oy * leds_width],
+			p,
+			rot,
+			leds_width,
+			width
+		);
+	}
+}
+
+

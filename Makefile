@@ -3,12 +3,14 @@
 # The top level targets link in the two .o files for now.
 #
 TARGETS += teensy-udp-rx
-TARGETS += rgb-test
 TARGETS += matrix-test
 TARGETS += fire
 TARGETS += matrix-udp-rx
-TARGETS += udp-rx
 TARGETS += opc-rx
+TARGETS += cube-life
+TARGETS += cube-image
+TARGETS += mta-sign
+TARGETS += identify
 
 LEDSCAPE_OBJS = ledscape.o pru.o bitslice.o util.o
 LEDSCAPE_LIB := libledscape.a
@@ -117,6 +119,14 @@ dts: LEDscape-single.dts
 	dtc -O dtb -o /lib/firmware/ledscape-s-00A0.dtbo -b 0 -@ LEDscape-single.dts
 	echo ledscape-s > $(SLOT_FILE)
 
+
+
+firmware: $(DTB)
+	echo $(DTS) > $(SLOT_FILE)
+
+$(DTB): cape-bone-octo.dts FORCE
+	dtc -O dtb -o $@ -b 0 -@ $<
+FORCE:
 
 ###########
 # 

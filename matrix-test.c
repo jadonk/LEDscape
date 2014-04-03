@@ -98,7 +98,7 @@ rainbow(
 )
 {
 	const unsigned color = cycle % 180;
-	const unsigned dim = 8;
+	const unsigned dim = 128;
 
 	for (unsigned x=0; x < width; x++) {
 		for (unsigned y=0; y < height; y++) {
@@ -141,10 +141,45 @@ gradient(
 			uint8_t b = 0xFF;
 			out[1] = b * ((((x + y + cycle) >> 5) ) & 1);
 #else
-			uint8_t b = ((x+y+cycle) % 32) * 8;
-			out[0] = b * ((((x + y + cycle) >> 5) % 3) & 1);
-			out[1] = b * ((((x + y + cycle) >> 5) % 5) & 1);
-			out[2] = b * ((((x + y + cycle) >> 5) % 7) & 1);
+			uint32_t b = 0;
+
+			if (x % 32 < (x/32 + 4) && y % 32 < (y/32+1))
+			{
+				b = 0xFFFFFF;
+			} else
+			if (x < 32)
+			{
+				if (y < 32)
+					b = 0xFF0000;
+				else
+				if (y < 64)
+					b = 0x0000FF;
+				else
+				if (y < 96)
+					b = 0x00FF00;
+				else
+					b = 0x411111;
+			} else
+			if (x < 64)
+			{
+				if (y < 32)
+					b = 0xFF00FF;
+				else
+				if (y < 64)
+					b = 0x00FFFF;
+				else
+				if (y < 96)
+					b = 0xFFFF00;
+				else
+					b = 0x114111;
+			} else {
+				b = 0x111141;
+			}
+				
+			out[0] = (b >> 16) & 0xFF;
+			out[1] = (b >>  8) & 0xFF;
+			out[2] = (b >>  0) & 0xFF;
+			//*out = b;
 #endif
 		}
 	}
@@ -155,7 +190,10 @@ main(void)
 {
 	const int width = 32;
 	const int height = 16;
-	ledscape_t * const leds = ledscape_init(width, height);
+	const int led_width = 32;
+	const int led_height = 16;
+	ledscape_t * const leds = ledscape_init(led_width, led_height);
+
 	printf("init done\n");
 	time_t now = time(NULL);
 	time_t last_time = now;
@@ -173,6 +211,7 @@ main(void)
 
 	unsigned i = 0;
 	uint32_t * const p = calloc(width*height,4);
+	uint32_t * const led_fb = calloc(led_width*led_height,4);
 
 	while (1)
 	{
@@ -180,7 +219,8 @@ main(void)
 			rainbow(p, width, height, 10, i++);
 		else
 			gradient(p, width, height, 10, i++);
-		ledscape_draw(leds, p);
+		framebuffer_flip(led_fb, p, led_width, led_height, width, height);
+		ledscape_draw(leds, led_fb);
 		usleep(20000);
 
 #if 0
