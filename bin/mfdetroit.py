@@ -46,6 +46,34 @@ images.append(Image.open("images/boris.png"))
 titles.append("BeagleBoard.org")
 images.append(Image.open("images/i3.png"))
 titles.append("i3 Detroit")
+# BeagleBone Black
+images.append(Image.open("images/oshw.png"))
+titles.append("Open Source H/W")
+images.append(Image.open("images/boris_cape.png"))
+titles.append("BeagleBone Capes")
+images.append(Image.open("images/android.png"))
+titles.append("Android")
+# Cloud9 IDE
+images.append(Image.open("images/cylon.png"))
+titles.append("JavaScript")
+# Python
+images.append(Image.open("images/gobot.png"))
+titles.append("Go language")
+images.append(Image.open("images/artoo.png"))
+titles.append("Ruby language")
+images.append(Image.open("images/freebsd.png"))
+# Education
+# Books
+# OpenCV (moustache)
+titles.append("FreeBSD")
+images.append(Image.open("images/ArduinoBeaglebone_BBO_NO_16-9.png"))
+titles.append("Arduino partnership")
+# Gaming cape
+# OpenROV
+# MachineKit
+# PRUs
+# OpenSprinkler
+# Octoscroller
 
 index = 0
 angle = 0
