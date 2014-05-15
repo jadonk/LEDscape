@@ -5,6 +5,7 @@ try:
 except:
 	print "Unable to load audio"
 
+import sys
 import Image, ImageFont, ImageDraw
 import socket
 import time
@@ -66,8 +67,6 @@ images.append(Image.open("images/boris_opencv.png"))
 titles.append("OpenCV")
 images.append(Image.open("images/gamecape.png"))
 titles.append("Retro gaming")
-images.append(Image.open("images/ArduinoBeaglebone_BBO_NO_16-9.png"))
-titles.append("Arduino partners")
 images.append(Image.open("images/freebsd.png"))
 titles.append("FreeBSD")
 # OpenROV
@@ -77,6 +76,8 @@ titles.append("FreeBSD")
 # Octoscroller
 images.append(Image.open("images/android.png"))
 titles.append("Android")
+images.append(Image.open("images/ArduinoBeaglebone_BBO_NO_16-9.png"))
+titles.append("Arduino partners")
 
 index = 0
 angle = 0
@@ -121,5 +122,5 @@ while True:
 		frame = 0
 		index = index + 1
 		if(index >= len(images)):
-			index = 0
+			sys.exit(0)
 

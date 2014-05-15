@@ -8,4 +8,9 @@ config-pin overlay CAPE-BONE-OCTO
 sleep 10
 
 #exec ./bin/matrix-test >/dev/null
-exec ./bin/matrix-udp-rx >/dev/null
+exec ./bin/matrix-udp-rx >/dev/null &
+
+while [ true ]; do
+ ./bin/mfdetroit.py
+ ./bin/Cartoonifier_Desktop
+done
