@@ -620,11 +620,11 @@ ledscape_config_t ledscape_matrix_default = {
 	.matrix_config = {
 		.type		= LEDSCAPE_MATRIX,
 		.width		= 256,
-		.height		= 128,
+		.height		= 256,
 		.panel_width	= 32,
 		.panel_height 	= 32,
 		.leds_width	= 256,
-		.leds_height	= 128,
+		.leds_height	= 256,
 		.panels		= {
 			DEFAULT_MATRIX(0),
 			DEFAULT_MATRIX(1),

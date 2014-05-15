@@ -14,8 +14,8 @@
 #include <arpa/inet.h>
 #include <termios.h>
 
-#define WIDTH 512
-#define HEIGHT 64
+#define WIDTH 256
+#define HEIGHT 256
 #define MAX_PLAYERS 4
 
 uint32_t board[HEIGHT][WIDTH];

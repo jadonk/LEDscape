@@ -21,8 +21,8 @@
 #define DELTA_G 30
 #define DELTA_B 80
 
-#define WIDTH 512
-#define HEIGHT 64
+#define WIDTH 256
+#define HEIGHT 256
 
 typedef struct
 {

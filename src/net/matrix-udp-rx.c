@@ -96,8 +96,8 @@ main(
 	const char * config_file = NULL;
 	const char * startup_message = "";
 	int timeout = 60;
-	unsigned width = 512;
-	unsigned height = 64;
+	unsigned width = 256;
+	unsigned height = 256;
 	int no_init = 0;
 
 	while (1)

@@ -18,7 +18,7 @@ main(
 )
 {
 	const int width = 256;
-	const int height = 128;
+	const int height = 256;
 
 	ledscape_config_t * config = &ledscape_matrix_default;
 	if (argc > 1)

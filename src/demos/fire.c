@@ -12,8 +12,8 @@
 #include "ledscape.h"
 
 // sideways pyramid; 256 height, but 128 wide
-#define WIDTH 512
-#define HEIGHT 64
+#define WIDTH 256
+#define HEIGHT 256
 
 
 // Borrowed by OctoWS2811 rainbow test
