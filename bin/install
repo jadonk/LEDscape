@@ -36,7 +36,8 @@ END
 sync
 umount "$BOOT"
 
+apt-get install python-imaging python-alsaaudio
+
 cp bin/ledscape.service /etc/systemd/system/
 systemctl enable ledscape.service
 systemctl status ledscape.service
-
