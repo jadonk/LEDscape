@@ -16,7 +16,7 @@ int
 main(void)
 {
 	const int width = 32*5;
-	const int height = 16;
+	const int height = 32;
 	unsigned i;
 	uint32_t * const p = calloc(width*height,4);
 
