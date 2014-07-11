@@ -261,6 +261,11 @@ ledscape_matrix_draw(
 	static unsigned frame = 0;
 	const uint32_t * const in = buffer;
 	uint8_t * const out = leds->pru->ddr + leds->frame_size * frame;
+	FILE * dbgFileIn;
+	FILE * dbgFileOut;
+	char * dbgFileInName = "buffer_in.bin";
+	char * dbgFileOutName = "buffer_out.bin";
+	static int dbgDone = 0;
 
 	// matrix is re-packed such that a 6-byte read will bring in
 	// the brightness values for all six outputs of a given panel.
@@ -303,7 +308,18 @@ ledscape_matrix_draw(
 		}
 	}
 
+	if(dbgDone == 0) {
+		dbgFileIn = fopen(dbgFileInName, "w");
+		dbgFileOut = fopen(dbgFileOutName, "w");
+		if(dbgFileIn) fwrite(in, leds->frame_size, 1, dbgFileIn);
+		if(dbgFileOut) fwrite(out, leds->frame_size, 1, dbgFileOut);
+		fclose(dbgFileIn);
+		fclose(dbgFileOut);
+		dbgDone = 1;
+	}
+
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr + leds->frame_size * frame;
+
 	// disable double buffering for now
 	//frame = (frame + 1) & 1;
 }
