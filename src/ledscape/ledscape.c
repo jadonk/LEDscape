@@ -164,7 +164,7 @@ ledscape_remap(
 	// horizontal panel number is y % (16*8)
 	// if y % 2 == 1, map backwards
 	const unsigned panel_width = 16;
-	const unsigned panel_height = 8;
+	const unsigned panel_height = 16;
 	unsigned panel_num = x / panel_width;
 	unsigned output_line = y / panel_height;
 	unsigned panel_x = x % panel_width;
@@ -241,7 +241,7 @@ ledscape_matrix_panel_copy(
 			// the top half and bottom half of the panels
 			// are squished together in the output since
 			// they are drawn simultaneously.
-			uint8_t * const pix = &out[x*row_stride + (y/8)*3 + (y%8)*row_len];
+			uint8_t * const pix = &out[x*row_stride + (y/16)*3 + (y%16)*row_len];
 
 			pix[0] = (col >> 16) & 0xFF; // red
 			pix[1] = (col >>  8) & 0xFF; // green
@@ -606,14 +606,14 @@ ledscape_printf(
 
 /** Default ledscape config */
 #define DEFAULT_MATRIX(i) { \
-		{ 0*32, i*16, 0 }, \
-		{ 1*32, i*16, 0 }, \
-		{ 2*32, i*16, 0 }, \
-		{ 3*32, i*16, 0 }, \
-		{ 4*32, i*16, 0 }, \
-		{ 5*32, i*16, 0 }, \
-		{ 6*32, i*16, 0 }, \
-		{ 7*32, i*16, 0 }, \
+		{ 0*32, i*32, 0 }, \
+		{ 1*32, i*32, 0 }, \
+		{ 2*32, i*32, 0 }, \
+		{ 3*32, i*32, 0 }, \
+		{ 4*32, i*32, 0 }, \
+		{ 5*32, i*32, 0 }, \
+		{ 6*32, i*32, 0 }, \
+		{ 7*32, i*32, 0 }, \
 	} \
 
 ledscape_config_t ledscape_matrix_default = {
@@ -622,7 +622,7 @@ ledscape_config_t ledscape_matrix_default = {
 		.width		= 256,
 		.height		= 128,
 		.panel_width	= 32,
-		.panel_height 	= 16,
+		.panel_height 	= 32,
 		.leds_width	= 256,
 		.leds_height	= 128,
 		.panels		= {

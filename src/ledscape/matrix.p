@@ -16,7 +16,7 @@
  * To pause the redraw loop, write a NULL to the buffer pointer.
  * To shut down the PRU, write -1 to the buffer pointer.
  */
-#if 1
+#if 0
 #define MATRIX_HEIGHT 8		// 32x16 matrices
 #else
 #define MATRIX_HEIGHT 16	// 32x32 matrices

@@ -193,7 +193,7 @@ main(
 )
 {
 	int width = 256;
-	int height = 128;
+	int height = 256;
 
 	ledscape_config_t * config = &ledscape_matrix_default;
 	if (argc > 1)
