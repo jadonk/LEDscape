@@ -211,7 +211,7 @@ main(
 		if (rc == 0)
 		{
 			// go into timeout mode
-			display_failure(leds, "timeout");
+			display_startup_message(leds);
 			continue;
 		}
 
