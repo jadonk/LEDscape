@@ -165,7 +165,7 @@ main(
 	const size_t image_size = width * height * 3;
 
 	// largest possible UDP packet
-	uint8_t *buf = calloc(width*height,4);
+	uint8_t *buf = calloc(65536,1);
 #if 0
 	if (sizeof(buf) < image_size + 1)
 		die("%u x %u too large for UDP\n", width, height);
@@ -215,10 +215,10 @@ main(
 			continue;
 		}
 
-		const ssize_t rlen = recv(sock, buf, sizeof(buf), 0);
+		const ssize_t rlen = recv(sock, buf, 65536, 0);
 		if (rlen < 0)
 			die("recv failed: %s\n", strerror(errno));
-		warn_once("received %zu bytes\n", rlen);
+		warn("received %zu bytes\n", rlen);
 
 		/*
 		if (buf[0] == 2)
@@ -265,9 +265,9 @@ main(
 		// and turn onto the side
 		for (unsigned x = 0 ; x < width ; x++) // 256
 		{
-			for (unsigned y = 0 ; y < 32 ; y++) // 64
+			for (unsigned y = 0 ; y < 64 ; y++) // can only fit 256x64
 			{
-				uint32_t * out = (void*) &fb[(y+32*frame_part)*width + x];
+				uint32_t * out = (void*) &fb[(y+64*frame_part)*width + x];
 				const uint8_t * const in = &buf[1 + 3*(y*width + x)];
 				uint32_t r = in[0];
 				uint32_t g = in[1];
