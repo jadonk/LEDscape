@@ -101,6 +101,7 @@ static void display_startup_message(ledscape_t * const leds)
 	static int init = 0;
 	static uint32_t * fb;
 	if(!init) {
+		init = 1;
 		fb = calloc(width*height,4);
 		ledscape_printf(fb+0*width, width, 0xFF0000, "%s", startup_message);
 		ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
