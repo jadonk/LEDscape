@@ -98,11 +98,16 @@ static void usage(void)
 char * startup_message = "See http://ow.ly/zsuPi";
 static void display_startup_message(ledscape_t * const leds)
 {
-	uint32_t * const fb = calloc(width*height,4);
-	ledscape_printf(fb+0*width, width, 0xFF0000, "%s", startup_message);
-	ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
+	static int init = 0;
+	static uint32_t * fb;
+	if(!init) {
+		fb = calloc(width*height,4);
+		ledscape_printf(fb+0*width, width, 0xFF0000, "%s", startup_message);
+		ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
+	}
 	ledscape_draw(leds, fb);
-	free(fb);
+
+	sleep(1);
 }
 
 static void display_failure(ledscape_t * const leds, const char * message)
@@ -204,7 +209,7 @@ main(
 	unsigned last_report = 0;
 	unsigned long delta_sum = 0;
 	unsigned frames = 0;
-	unsigned mode = 4;
+	unsigned mode = 0x30;
 
 	demo_matrix_test_init();
 	demo_identify_init();
@@ -243,21 +248,21 @@ main(
 			ledscape_draw(leds, fb);
 			break;
 
-		case 4:
+		case 0x30:
 			display_startup_message(leds);
 			break;
 
-		case 5:
+		case 0x31:
 			demo_matrix_test_update(leds);
 			break;
 
-		case 6:
+		case 0x32:
 			demo_identify_update(leds);
 			break;
 
 		default:
 			printf("bad type %d\n", mode);
-			mode = 4;
+			mode = 0x30;
 			break;
 		}
 	}
