@@ -152,6 +152,19 @@ ledscape_config(
 	const char * filename
 );
 
+
+void demo_identify_init(void);
+void demo_identify_update(
+	ledscape_t * const leds
+);
+
+
+void demo_matrix_test_init(void);
+void demo_matrix_test_update(
+	ledscape_t * const leds
+);
+
+
 #ifdef __cplusplus
 };
 #endif

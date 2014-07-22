@@ -10,6 +10,8 @@ LIB-y += libledscape.a
 
 libledscape.srcs += \
 	ledscape.c \
+	matrix-test.c \
+	identify.c \
 	pru.c \
 	util.c \
 	config.c \

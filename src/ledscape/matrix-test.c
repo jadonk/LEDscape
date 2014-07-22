@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include "ledscape.h"
 
-
 // Borrowed by OctoWS2811 rainbow test
 static unsigned int
 h2rgb(
@@ -186,36 +185,12 @@ gradient(
 }
 
 
-int
-main(
-	int argc,
-	const char ** argv
-)
+extern int width;
+extern int height;
+uint32_t * demo_matrix_test_p;
+
+void demo_matrix_test_init(void)
 {
-	int width = 256;
-	int height = 256;
-
-	ledscape_config_t * config = &ledscape_matrix_default;
-	if (argc > 1)
-	{
-		config = ledscape_config(argv[1]);
-		if (!config)
-			return EXIT_FAILURE;
-	}
-
-	if (config->type == LEDSCAPE_MATRIX)
-	{
-		config->matrix_config.width = width;
-		config->matrix_config.height = height;
-	}
-
-	ledscape_t * const leds = ledscape_init(config, 0);
-
-
-	printf("init done\n");
-	time_t last_time = time(NULL);
-	unsigned last_i = 0;
-
 	// pre-compute the 180 rainbow colors
 	for (int i=0; i<180; i++)
 	{
@@ -225,35 +200,21 @@ main(
 		rainbowColors[i] = makeColor(hue, saturation, lightness);
 	}
 
-	unsigned i = 0;
-	uint32_t * const p = calloc(width*height,4);
+	demo_matrix_test_p = calloc(width*height,4);
+}
 
-	while (1)
-	{
-		if (1)
-			rainbow(p, width, height, 10, i++);
-		else
-			gradient(p, width, height, 10, i++);
+void demo_matrix_test_update(
+	ledscape_t * const leds
+)
+{
+	static unsigned phase = 0;
 
-		ledscape_draw(leds, p);
+	if (1)
+		rainbow(demo_matrix_test_p, width, height, 10, phase++);
+	else
+		gradient(demo_matrix_test_p, width, height, 10, phase++);
 
-		usleep(20000);
+	ledscape_draw(leds, demo_matrix_test_p);
 
-		// wait for the previous frame to finish;
-		//const uint32_t response = ledscape_wait(leds);
-		const uint32_t response = 0;
-		time_t now = time(NULL);
-		if (now != last_time)
-		{
-			printf("%d fps. starting %d previous %"PRIx32"\n",
-				i - last_i, i, response);
-			last_i = i;
-			last_time = now;
-		}
-
-	}
-
-	ledscape_close(leds);
-
-	return EXIT_SUCCESS;
+	usleep(20000);
 }

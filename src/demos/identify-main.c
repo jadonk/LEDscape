@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include "ledscape.h"
 
+int width = 256;
+int height = 256;
 
 int
 main(
@@ -17,9 +19,6 @@ main(
 	char ** argv
 )
 {
-	const int width = 256;
-	const int height = 256;
-
 	ledscape_config_t * config = &ledscape_matrix_default;
 	if (argc > 1)
 	{
@@ -36,47 +35,17 @@ main(
 
 	ledscape_t * const leds = ledscape_init(config, 0);
 
+	demo_identify_init();
+
 	//printf("init done %d,%d\n", width, height);
 	time_t last_time = time(NULL);
 	unsigned last_i = 0;
 
 	unsigned i = 0;
-	uint32_t * const p = calloc(width*height,4);
-	int scroll_x = 128;
-	memset(p, 0x10, width*height*4);
-
-	for (int i = 0 ; i < 8 ; i++)
-	{
-		for (int j = 0 ; j < 8 ; j++)
-		{
-			ledscape_printf(
-				&p[8+j*32 + width*i*16],
-				width,
-				0xFF0000, // red
-				"%d-%d",
-				i,
-				j
-			);
-			ledscape_printf(
-				&p[1+j*32 + width*i*16],
-				width,
-				0x00FF00, // green
-				"^"
-			);
-			ledscape_printf(
-				&p[1+j*32 + width*(i*16+8)],
-				width,
-				0x0000FF, // blue
-				"|"
-			);
-			p[j*32+width*i*16] = 0xFFFF00;
-		}
-	}
 
 	while (1)
 	{
-		ledscape_draw(leds, p);
-		usleep(20000);
+		demo_identify_update(leds);
 
 		// wait for the previous frame to finish;
 		//const uint32_t response = ledscape_wait(leds);

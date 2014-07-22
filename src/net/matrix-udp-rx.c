@@ -30,6 +30,15 @@ unsigned width = 256;
 unsigned height = 256;
 int port = 9999;
 
+extern void demo_matrix_test_init(void);
+extern void demo_matrix_test_update(
+	ledscape_t * const leds
+);
+extern void demo_identify_init(void);
+extern void demo_identify_update(
+	ledscape_t * const leds
+);
+
 static int
 udp_socket(
 	const int port
@@ -195,109 +204,62 @@ main(
 	unsigned last_report = 0;
 	unsigned long delta_sum = 0;
 	unsigned frames = 0;
+	unsigned mode = 4;
+
+	demo_matrix_test_init();
+	demo_identify_init();
 
 	display_startup_message(leds);
 	uint32_t * const fb = calloc(width*height,4);
 	while (1)
 	{
-		int rc = wait_socket(sock, timeout*1000);
-		if (rc < 0)
-		{
-			// something failed
-			display_failure(leds, "read failed?");
-			exit(EXIT_FAILURE);
+		const ssize_t rlen = recv(sock, buf, 65536, MSG_DONTWAIT);
+		if (rlen > 0) {
+			warn_once("received %zu bytes\n", rlen);
+			mode = buf[0];
 		}
 
-		if (rc == 0)
+		switch(mode)
 		{
-			// go into timeout mode
-			display_startup_message(leds);
-			continue;
-		}
-
-		const ssize_t rlen = recv(sock, buf, 65536, 0);
-		if (rlen < 0)
-			die("recv failed: %s\n", strerror(errno));
-		warn("received %zu bytes\n", rlen);
-
-		/*
-		if (buf[0] == 2)
-		{
-			// image type
-			printf("image type: %.*s\n",
-				(int) rlen - 1,
-				&buf[1]
-			);
-			continue;
-		}
-
-		if (buf[0] != 1)
-		{
-			// What is it?
-			warn_once("Unknown image type '%c' (%02x)\n",
-				buf[0],
-				buf[0]
-			);
-			continue;
-		}
-		*/
-		const unsigned frame_part = buf[0];
-		if (frame_part != 0 && frame_part != 1)
-		{
-			printf("bad type %d\n", frame_part);
-			continue;
-		}
-
-		if ((size_t) rlen != image_size + 1)
-		{
-			warn_once("WARNING: Received packet %zu bytes, expected %zu\n",
-				rlen,
-				image_size + 1
-			);
-		}
-
-		struct timeval start_tv, stop_tv, delta_tv;
-		gettimeofday(&start_tv, NULL);
-
-		const unsigned frame_num = 0;
-
-		// copy the 3-byte values into the 4-byte framebuffer
-		// and turn onto the side
-		for (unsigned x = 0 ; x < width ; x++) // 256
-		{
-			for (unsigned y = 0 ; y < 64 ; y++) // can only fit 256x64
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			// copy the 3-byte values into the 4-byte framebuffer
+			// and turn onto the side
+			for (unsigned x = 0 ; x < width ; x++) // 256
 			{
-				uint32_t * out = (void*) &fb[(y+64*frame_part)*width + x];
-				const uint8_t * const in = &buf[1 + 3*(y*width + x)];
-				uint32_t r = in[0];
-				uint32_t g = in[1];
-				uint32_t b = in[2];
-				*out = (r << 16) | (g << 8) | (b << 0);
+				for (unsigned y = 0 ; y < 64 ; y++) // can only fit 256x64
+				{
+					uint32_t * out = (void*) &fb[(y+64*mode)*width + x];
+					const uint8_t * const in = &buf[1 + 3*(y*width + x)];
+					uint32_t r = in[0];
+					uint32_t g = in[1];
+					uint32_t b = in[2];
+					*out = (r << 16) | (g << 8) | (b << 0);
+				}
 			}
-		}
 
-		// only draw after the second frame
-		if (frame_part == 1)
 			ledscape_draw(leds, fb);
+			break;
 
-		gettimeofday(&stop_tv, NULL);
-		timersub(&stop_tv, &start_tv, &delta_tv);
+		case 4:
+			display_startup_message(leds);
+			break;
 
-		frames++;
-		delta_sum += delta_tv.tv_usec;
-		if (stop_tv.tv_sec - last_report < report_interval)
-			continue;
-		last_report = stop_tv.tv_sec;
+		case 5:
+			demo_matrix_test_update(leds);
+			break;
 
-		const unsigned delta_avg = delta_sum / frames;
-		printf("%6u usec avg, max %.2f fps, actual %.2f fps (over %u frames)\n",
-			delta_avg,
-			report_interval * 1.0e6 / delta_avg,
-			frames * 1.0 / report_interval,
-			frames
-		);
+		case 6:
+			demo_identify_update(leds);
+			break;
 
-		frames = delta_sum = 0;
+		default:
+			printf("bad type %d\n", mode);
+			mode = 4;
+			break;
+		}
 	}
 
 	return 0;
