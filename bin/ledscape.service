@@ -11,6 +11,7 @@ Description=BeagleBone LED matrix driver
 WorkingDirectory=/root/LEDscape/
 ExecStart=/root/LEDscape/bin/run-ledscape
 KillMode=process
+Restart=on-abort
 
 [Install]
 WantedBy=multi-user.target

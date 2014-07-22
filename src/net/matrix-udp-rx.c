@@ -26,6 +26,9 @@
 #include "ledscape.h"
 
 static int verbose;
+unsigned width = 256;
+unsigned height = 256;
+int port = 9999;
 
 static int
 udp_socket(
@@ -83,6 +86,24 @@ static void usage(void)
 	exit(EXIT_FAILURE);
 }
 
+char * startup_message = "See http://ow.ly/zsuPi";
+static void display_startup_message(ledscape_t * const leds)
+{
+	uint32_t * const fb = calloc(width*height,4);
+	ledscape_printf(fb+0*width, width, 0xFF0000, "%s", startup_message);
+	ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
+	ledscape_draw(leds, fb);
+	free(fb);
+}
+
+static void display_failure(ledscape_t * const leds, const char * message)
+{
+	uint32_t * const fb = calloc(width*height,4);
+	memset(fb, 0, width*height*4);
+	ledscape_printf(fb, width, 0xFF0000, message);
+	ledscape_draw(leds, fb);
+	free(fb);
+}
 
 int
 main(
@@ -92,12 +113,8 @@ main(
 {
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
-	int port = 9999;
 	const char * config_file = NULL;
-	const char * startup_message = "";
 	int timeout = 60;
-	unsigned width = 256;
-	unsigned height = 256;
 	int no_init = 0;
 
 	while (1)
@@ -179,29 +196,22 @@ main(
 	unsigned long delta_sum = 0;
 	unsigned frames = 0;
 
+	display_startup_message(leds);
 	uint32_t * const fb = calloc(width*height,4);
-	ledscape_printf(fb, width, 0xFF0000, "%s", startup_message);
-	ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
-	ledscape_draw(leds, fb);
-
 	while (1)
 	{
 		int rc = wait_socket(sock, timeout*1000);
 		if (rc < 0)
 		{
 			// something failed
-			memset(fb, 0, width*height*4);
-			ledscape_printf(fb, width, 0xFF0000, "read failed?");
-			ledscape_draw(leds, fb);
+			display_failure(leds, "read failed?");
 			exit(EXIT_FAILURE);
 		}
 
 		if (rc == 0)
 		{
 			// go into timeout mode
-			memset(fb, 0, width*height*4);
-			ledscape_printf(fb, width, 0xFF0000, "timeout");
-			ledscape_draw(leds, fb);
+			display_failure(leds, "timeout");
 			continue;
 		}
 
