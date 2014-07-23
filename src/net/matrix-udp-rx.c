@@ -22,6 +22,10 @@
 #include <string.h>
 #include <pthread.h>
 #include <getopt.h>
+#ifdef LIBAV
+#include <libavcodec/avcodec.h>
+#include <libavutil/mathematics.h>
+#endif
 #include "util.h"
 #include "ledscape.h"
 
@@ -38,6 +42,58 @@ extern void demo_identify_init(void);
 extern void demo_identify_update(
 	ledscape_t * const leds
 );
+
+#ifdef LIBAV
+AVCodec *gif_codec;
+AVCodecContext * gif_c = NULL;
+AVPacket gif_avpkt;
+AVFrame * gif_picture;
+void demo_gif_init(void)
+{
+	gif_codec = avcodec_find_decoder(CODEC_ID_GIF);
+	gif_c = avcodec_alloc_context();
+	avcodec_open(gif_c, gif_codec);
+	gif_picture = avcodec_alloc_frame();
+	gif_avpkt.size = 0;
+	gif_avpkt.data = NULL;
+}
+
+void demo_gif_update(
+	ledscape_t * const leds,
+	uint8_t *buf,
+	ssize_t size
+)
+{
+	int got_picture, len;
+	if(gif_avpkt.size == 0)
+	{
+		gif_avpkt.size = size;
+		gif_avpkt.data = buf;
+	}
+
+	len = avcodec_decode_video2(gif_c, gif_picture, &got_picture, &gif_avpkt);
+	if(got_picture)
+	{
+		ledscape_draw(leds, gif_picture->data[0]);
+		usleep(gif_c->ticks_per_frame * 1000000 * gif_c->time_base.num /
+			gif_c->time_base.den);
+	}
+
+	gif_avpkt.size -= len;
+	gif_avpkt.data += len;
+}
+#else
+void demo_gif_init(void)
+{
+}
+void demo_gif_update(
+	ledscape_t * const leds,
+	uint8_t *buf,
+	ssize_t size
+)
+{
+}
+#endif
 
 static int
 udp_socket(
@@ -214,6 +270,7 @@ main(
 
 	demo_matrix_test_init();
 	demo_identify_init();
+	demo_gif_init();
 
 	display_startup_message(leds);
 	uint32_t * const fb = calloc(width*height,4);
@@ -259,6 +316,10 @@ main(
 
 		case 0x32:
 			demo_identify_update(leds);
+			break;
+
+		case 0x33:
+			demo_gif_update(leds, &buf[1], rlen-1);
 			break;
 
 		default:
