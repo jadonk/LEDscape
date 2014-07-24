@@ -622,25 +622,25 @@ ledscape_printf(
 
 /** Default ledscape config */
 #define DEFAULT_MATRIX(i) { \
-		{ 0*32, i*16, 0 }, \
-		{ 1*32, i*16, 0 }, \
-		{ 2*32, i*16, 0 }, \
-		{ 3*32, i*16, 0 }, \
-		{ 4*32, i*16, 0 }, \
-		{ 5*32, i*16, 0 }, \
-		{ 6*32, i*16, 0 }, \
-		{ 7*32, i*16, 0 }, \
+		{ 0*32, i*32, 0 }, \
+		{ 1*32, i*32, 0 }, \
+		{ 2*32, i*32, 0 }, \
+		{ 3*32, i*32, 0 }, \
+		{ 4*32, i*32, 0 }, \
+		{ 5*32, i*32, 0 }, \
+		{ 6*32, i*32, 0 }, \
+		{ 7*32, i*32, 0 }, \
 	} \
 
 ledscape_config_t ledscape_matrix_default = {
 	.matrix_config = {
 		.type		= LEDSCAPE_MATRIX,
 		.width		= 256,
-		.height		= 128,
+		.height		= 256,
 		.panel_width	= 32,
-		.panel_height 	= 16,
+		.panel_height 	= 32,
 		.leds_width	= 256,
-		.leds_height	= 128,
+		.leds_height	= 256,
 		.panels		= {
 			DEFAULT_MATRIX(0),
 			DEFAULT_MATRIX(1),
