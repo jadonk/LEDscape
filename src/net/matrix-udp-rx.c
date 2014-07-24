@@ -32,7 +32,7 @@
 #include "ledscape.h"
 
 static int verbose;
-unsigned width = 256;
+unsigned width = 128;
 unsigned height = 256;
 int port = 9999;
 
