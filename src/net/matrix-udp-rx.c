@@ -320,9 +320,9 @@ main(
 		case 3:
 			// copy the 3-byte values into the 4-byte framebuffer
 			// and turn onto the side
-			for (unsigned x = 0 ; x < width ; x++) // 256
+			for (unsigned x = 0 ; x < width ; x++)
 			{
-				for (unsigned y = 0 ; y < 64 ; y++) // can only fit 256x64
+				for (unsigned y = 0 ; y < height ; y++)
 				{
 					uint32_t * out = (void*) &fb[(y+64*mode)*width + x];
 					const uint8_t * const in = &buf[1 + 3*(y*width + x)];
