@@ -25,6 +25,8 @@
 #ifdef LIBAV
 #include <libavcodec/avcodec.h>
 #include <libavutil/mathematics.h>
+#else
+#include <gif_lib.h>
 #endif
 #include "util.h"
 #include "ledscape.h"
@@ -83,15 +85,40 @@ void demo_gif_update(
 	gif_avpkt.data += len;
 }
 #else
+GifFileType * demo_gif_file = NULL;
+GifByteType * demo_gif_buf = NULL;
+int demo_gif_size = 0;
 void demo_gif_init(void)
 {
 }
+
+int demo_gif_inputfunc(GifFileType * gif, GifByteType * bytes, int size) {
+	if(size >= demo_gif_size)
+	{
+		memcpy(bytes, demo_gif_buf, size);
+		demo_gif_buf += size;
+		demo_gif_size -= size;
+	}
+	else
+	{
+		size = 0;
+	}
+	return size;
+}
+
 void demo_gif_update(
 	ledscape_t * const leds,
 	uint8_t *buf,
 	ssize_t size
 )
 {
+	static int init = 0;
+	if(demo_gif_size == 0)
+	{
+		GifFileType * demo_gif_file = NULL;
+		demo_gif_buf = buf;
+		demo_gif_size = size;
+	}
 }
 #endif
 
