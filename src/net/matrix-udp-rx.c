@@ -178,19 +178,19 @@ static void usage(void)
 	exit(EXIT_FAILURE);
 }
 
-char * startup_message = "See http://ow.ly/zsuPi";
+char * startup_message = "http://ow.ly/zsuPi";
 static void display_startup_message(ledscape_t * const leds)
 {
 	static int init = 0;
 	static uint32_t * fb;
-	char hostname[21];
+	char hostname[15];
 	if(!init) {
 		init = 1;
 		fb = calloc(width*height,4);
-		ledscape_printf(fb+0*width, width, 0xFF0000, "%s", startup_message);
-		ledscape_printf(fb+16*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
-		gethostname(hostname, 21);
-		ledscape_printf(fb+32*width, width, 0x0000FF, "%s", hostname);
+		ledscape_printf(fb+8*width, width, 0xFF0000, "%s", startup_message);
+		ledscape_printf(fb+24*width, width, 0x00FF00, "%dx%d UDP port %d", width, height, port);
+		gethostname(hostname, 15);
+		ledscape_printf(fb+40*width, width, 0x0000FF, "%s.local", hostname);
 	}
 	ledscape_draw(leds, fb);
 
