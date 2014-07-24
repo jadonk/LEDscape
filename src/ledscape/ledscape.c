@@ -274,10 +274,6 @@ ledscape_matrix_draw(
 		= &leds->config->matrix_config;
 
 	const size_t panel_stride = config->panel_width*2*3*LEDSCAPE_MATRIX_OUTPUTS;
-	warn_once("panel_width = %d\n", config->panel_width);
-	warn_once("panel_stride = %d\n", panel_stride);
-	warn_once("outputs = %d\n", LEDSCAPE_MATRIX_OUTPUTS);
-	warn_once("depth = %d\n", LEDSCAPE_MATRIX_PANELS);
 
 	for (unsigned i = 0 ; i < LEDSCAPE_MATRIX_OUTPUTS ; i++)
 	{
@@ -306,8 +302,6 @@ ledscape_matrix_draw(
 			);
 		}
 	}
-
-	warn_once("num_pixels = %d\n", leds->ws281x->num_pixels);
 
 	leds->ws281x->pixels_dma = leds->pru->ddr_addr + leds->frame_size * frame;
 	// disable double buffering for now
@@ -616,16 +610,20 @@ ledscape_printf(
 		{ 1*32, i*32, 0 }, \
 		{ 2*32, i*32, 0 }, \
 		{ 3*32, i*32, 0 }, \
+		{ 4*32, i*32, 0 }, \
+		{ 5*32, i*32, 0 }, \
+		{ 6*32, i*32, 0 }, \
+		{ 7*32, i*32, 0 }, \
 	} \
 
 ledscape_config_t ledscape_matrix_default = {
 	.matrix_config = {
 		.type		= LEDSCAPE_MATRIX,
-		.width		= 128,
+		.width		= 256,
 		.height		= 256,
 		.panel_width	= 32,
 		.panel_height 	= 32,
-		.leds_width	= 128,
+		.leds_width	= 256,
 		.leds_height	= 256,
 		.panels		= {
 			DEFAULT_MATRIX(0),

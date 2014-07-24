@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include "ledscape.h"
 
-int width = 128;
+int width = 256;
 int height = 256;
 
 int

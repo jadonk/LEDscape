@@ -346,8 +346,6 @@ READ_LOOP:
         // length (in pixels) into r1.
         LBCO      data_addr, CONST_PRUDRAM, 0, 8
 
-	//MOV width, 128 // hard code width
-
         // Wait for a non-zero command
         QBEQ READ_LOOP, data_addr, #0
 
