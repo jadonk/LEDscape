@@ -19,11 +19,13 @@ void demo_identify_init(void)
 	int scroll_x = 128;
 	demo_identify_p = calloc(width*height,4);
 	uint32_t * p = demo_identify_p;
+	int pw = width/32;
+	printf("numer of panels wide = %d\n", pw);
 	memset(p, 0x10, width*height*4);
 
-	for (int i = 0 ; i < 8 ; i++)
+	for (int i = 0 ; i < 8; i++)
 	{
-		for (int j = 0 ; j < 8 ; j++)
+		for (int j = 0 ; j < pw; j++)
 		{
 			ledscape_printf(
 				&p[8+j*32 + width*i*16],
