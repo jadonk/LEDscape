@@ -1,14 +1,21 @@
 #!/usr/bin/env python
-#import alsaaudio
-#import audioop
+try:
+	import alsaaudio
+	import audioop
+except:
+	print "Unable to load audio"
+
 import Image, ImageFont, ImageDraw
 import socket
 import time
 import collections
 from colorsys import hsv_to_rgb
 
-#inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK, '1')
-inp = 0
+try:
+	inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NONBLOCK, '1')
+except:
+	inp = 0
+
 if inp:
 	inp.setchannels(1)
 	inp.setrate(8000)
