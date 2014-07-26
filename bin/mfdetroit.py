@@ -65,7 +65,7 @@ while True:
 	x = 0
 	for i in list(samples):
 		#print i
-		draw.line((x,96,x,96-i), width=2, fill=(0,0,255))
+		draw.line((x,128,x,128-i), width=2, fill=(0,0,0x10))
 		x = x + 1
 
 	draw.text((24, 0), "BeagleBoard.org", font=font_sm, fill=(222,114,36))
