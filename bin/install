@@ -29,7 +29,8 @@ fi
 cp "$UENV" "$UENV.backup"
 
 cat <<END > "$UENV"
-optargs=quiet capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN
+optargs=quiet capemgr.disable_partno=BB-BONELT-HDMI,BB-BONELT-HDMIN init=/lib/systemd/systemd
+uenvcmd=run loadfdt;run loadimage;run mmcargs;bootz $loadaddr - $fdtaddr
 END
 
 sync
