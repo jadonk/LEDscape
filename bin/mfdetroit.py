@@ -39,10 +39,15 @@ def rainbow(i):
 rainbowColors = [rainbow((i/180.0)*256.0) for i in range(0, 180)]
 
 box = (0, 0, 128, 128)
-im2 = Image.open("images/boris.png").resize((96, 96)).crop(box).offset(16,16)
-im3 = Image.open("images/i3.png").resize((96, 96)).crop(box).offset(16,16)
+images = []
+titles = []
+text = []
+images.append(Image.open("images/boris.png"))
+titles.append("BeagleBoard.org")
+images.append(Image.open("images/i3.png"))
+titles.append("i3 Detroit")
 
-image = 0
+index = 0
 angle = 0
 frame = 0
 samples = collections.deque(maxlen=128)
@@ -54,29 +59,24 @@ while True:
 		try:
 			rms = audioop.rms(data, 1)
 		except:
-			rms = 0
-		if rms:
+			l = 0
+		if l:
 			samples.append(rms)
 
 	im = Image.new("RGBA", (width,height), "black")
 	draw = ImageDraw.Draw(im)
-	#im.paste(rainbow(frame), box)
 
 	x = 0
 	for i in list(samples):
-		#print i
 		draw.line((x,128,x,128-i), width=2, fill=(0,0,0x10))
 		x = x + 1
 
-	draw.text((24, 0), "BeagleBoard.org", font=font_sm, fill=(222,114,36))
-	if(image == 0):
-		rotated = im2.rotate(angle)
-	else:
-		rotated = im3.rotate(angle)
+	draw.text((32, 4), titles[index], font=font_sm, fill=(222,114,36))
+	rotated = images[index].resize((96, 96)).crop(box).offset(16,16).rotate(angle)
 	im = Image.composite(rotated, im, rotated)
 
-	if(frame > 360 and frame < 360+180):
-		angle = angle + 2
+	if(frame > 100 and frame < 100+90):
+		angle = angle + 4
 		if(angle >= 360):
 			angle = 0
 	else:
@@ -86,12 +86,9 @@ while True:
 	sock.sendto(data0, dest)
 
 	frame = frame + 1
-	if(frame >= 1000):
+	if(frame >= 300):
 		frame = 0
-		if(image == 0):
-			image = 1
-		else:
-			image = 0
-
-	time.sleep(0.01)
+		index = index + 1
+		if(index >= len(images)):
+			index = 0
 
