@@ -20,6 +20,7 @@ height = 128
 
 udp = socket.getprotobyname('udp')
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, udp)
+#dest = ("10.13.0.107", 9999)
 dest = ("localhost", 9999)
 font = ImageFont.truetype("fonts/spincycle.ttf", 18)
 font_sm = ImageFont.truetype("fonts/pf_tempesta_seven.ttf", 8)
