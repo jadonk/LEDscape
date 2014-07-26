@@ -42,17 +42,16 @@ box = (0, 0, 128, 128)
 images = []
 titles = []
 text = []
-images.append(Image.open("images/boris.png"))
+images.append(Image.open("images/boris_logo.png"))
 titles.append("BeagleBoard.org")
-images.append(Image.open("images/i3.png"))
-titles.append("i3 Detroit")
-# BeagleBone Black
-images.append(Image.open("images/oshw.png"))
-titles.append("Open Source H/W")
+images.append(Image.open("images/boris_tux.png"))
+titles.append("BeagleBone Black")
 images.append(Image.open("images/boris_cape.png"))
 titles.append("BeagleBone Capes")
-images.append(Image.open("images/android.png"))
-titles.append("Android")
+images.append(Image.open("images/i3.png"))
+titles.append("i3 Detroit")
+images.append(Image.open("images/oshw.png"))
+titles.append("Open Source H/W")
 # Cloud9 IDE
 images.append(Image.open("images/cylon.png"))
 titles.append("JavaScript")
@@ -61,19 +60,23 @@ images.append(Image.open("images/gobot.png"))
 titles.append("Go language")
 images.append(Image.open("images/artoo.png"))
 titles.append("Ruby language")
-images.append(Image.open("images/freebsd.png"))
-# Education
-# Books
-# OpenCV (moustache)
-titles.append("FreeBSD")
+images.append(Image.open("images/boris_grad.png"))
+titles.append("Books and training")
+images.append(Image.open("images/boris_opencv.png"))
+titles.append("OpenCV")
+images.append(Image.open("images/gamecape.png"))
+titles.append("Retro gaming")
 images.append(Image.open("images/ArduinoBeaglebone_BBO_NO_16-9.png"))
-titles.append("Arduino partnership")
-# Gaming cape
+titles.append("Arduino partners")
+images.append(Image.open("images/freebsd.png"))
+titles.append("FreeBSD")
 # OpenROV
 # MachineKit
 # PRUs
 # OpenSprinkler
 # Octoscroller
+images.append(Image.open("images/android.png"))
+titles.append("Android")
 
 index = 0
 angle = 0
@@ -114,7 +117,7 @@ while True:
 	sock.sendto(data0, dest)
 
 	frame = frame + 1
-	if(frame >= 300):
+	if(frame >= 200):
 		frame = 0
 		index = index + 1
 		if(index >= len(images)):
