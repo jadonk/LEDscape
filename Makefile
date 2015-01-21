@@ -111,10 +111,10 @@ clean:
 # The correct way to reserve the GPIO pins on the BBB is with the
 # capemgr and a Device Tree file.  But it doesn't work.
 #
-dts: LEDscape.dts
-	dtc -O dtb -o BB-LEDSCAPE-00A0.dtbo -b 0 -@ LEDscape.dts
-	install	-m 444 BB-LEDSCAPE-00A0.dtbo /lib/firmware
-	config-pin overlay BB-LEDSCAPE
+dts: opc-ex.dts
+	dtc -O dtb -o BB-OPC-EX-00A0.dtbo -b 0 -@ opc-ex.dts
+	install	-m 444 BB-OPC-EX-00A0.dtbo /lib/firmware
+	#config-pin overlay BB-OPC-EX
 
 # Include all of the generated dependency files
 -include .*.o.d
