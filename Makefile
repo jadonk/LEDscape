@@ -12,20 +12,6 @@ EXPANDED_PRU_TEMPLATES := $(addprefix pru/generated/, $(notdir $(PRU_TEMPLATES:.
 
 all: $(TARGETS) all_pru_templates ledscape.service
 
-ifeq ($(shell uname -m),armv7l)
-# We are on the BeagleBone Black itself;
-# do not cross compile.
-export CROSS_COMPILE:=
-else
-# We are not on the BeagleBone and might be cross compiling.
-# If the environment does not set CROSS_COMPILE, set our
-# own.  Install a cross compiler with something like:
-#
-# sudo apt-get install gcc-arm-linux-gnueabi
-#
-export CROSS_COMPILE?=arm-linux-gnueabi-
-endif
-
 CFLAGS += \
 	-std=c99 \
 	-W \
@@ -58,10 +44,7 @@ COMPILE.link = $(CROSS_COMPILE)gcc $(LDFLAGS) -o $@ $^ $(LDLIBS)
 # The TI "app_loader" is the userspace library for talking to
 # the PRU and mapping memory between it and the ARM.
 #
-APP_LOADER_DIR ?= ./am335x/app_loader
-APP_LOADER_LIB := $(APP_LOADER_DIR)/lib/libprussdrv.a
-CFLAGS += -I$(APP_LOADER_DIR)/include
-LDLIBS += $(APP_LOADER_LIB) -lm
+LDLIBS += -lprussdrv -lm
 
 #####
 #
@@ -71,8 +54,7 @@ LDLIBS += $(APP_LOADER_LIB) -lm
 # PASM also doesn't handle multiple statements per line, so we
 # insert hard newline characters for every ; in the file.
 #
-PASM_DIR ?= ./am335x/pasm
-PASM := $(PASM_DIR)/pasm
+PASM := pasm
 
 pru/generated/%.template: pru/templates/%.p pru/templates/common.p.h
 	$(eval TEMPLATE_NAME := $(basename $(notdir $@)))
@@ -83,7 +65,7 @@ pru/generated/%.template: pru/templates/%.p pru/templates/common.p.h
 
 all_pru_templates: $(EXPANDED_PRU_TEMPLATES)
 
-%.bin: %.p $(PASM)
+%.bin: %.p
 	mkdir -p pru/bin
 	cd `dirname $@` && gcc -E - < $(notdir $<) | perl -p -e 's/^#.*//; s/;/\n/g; s/BYTE\((\d+)\)/t\1/g' > $(notdir $<).i
 	$(PASM) -V3 -b $<.i pru/bin/$(notdir $(basename $@))
@@ -129,26 +111,10 @@ clean:
 # The correct way to reserve the GPIO pins on the BBB is with the
 # capemgr and a Device Tree file.  But it doesn't work.
 #
-SLOT_FILE=/sys/devices/bone_capemgr.8/slots
 dts: LEDscape.dts
-	@SLOT="`grep LEDSCAPE $(SLOT_FILE) | cut -d: -f1`"; \
-	if [ ! -z "$$SLOT" ]; then \
-		echo "Removing slot $$SLOT"; \
-		echo -$$SLOT > $(SLOT_FILE); \
-	fi
-	dtc -O dtb -o /lib/firmware/BB-LEDSCAPE-00A0.dtbo -b 0 -@ LEDscape.dts
-	echo BB-LEDSCAPE > $(SLOT_FILE)
-
-
-###########
-#
-# PRU Libraries and PRU assembler are build from their own trees.
-#
-$(APP_LOADER_LIB):
-	$(MAKE) -C $(APP_LOADER_DIR)/interface
-
-$(PASM):
-	$(MAKE) -C $(PASM_DIR)
+	dtc -O dtb -o BB-LEDSCAPE-00A0.dtbo -b 0 -@ LEDscape.dts
+	install	-m 444 BB-LEDSCAPE-00A0.dtbo /lib/firmware
+	config-pin overlay BB-LEDSCAPE
 
 # Include all of the generated dependency files
 -include .*.o.d
