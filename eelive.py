@@ -12,14 +12,15 @@ inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
 inp.setperiodsize(500)
 max = 0
 quiet_threshold = 3000
-quiet_time = 10000
+quiet_time = 1500
 i = 0
-max_ratio = 800
-a = 300
+max_ratio = 400
+a = 230
 
 width = 32*5
 height = 16
 j = 0
+k = 0
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dest = ("localhost", 9999)
@@ -49,15 +50,18 @@ while True:
 			i = 0
 		#print rms, max/max_ratio, i
 		im.paste((0,0,0), (0,0,width,height))
-		if j < 2000:
-			draw.text((1,0), str(max/max_ratio), font=font_sm, fill=(0,255,0))
-			draw.line((20,8,20+rms/a,8), width=14, fill=(0,0,255))
-			draw.line((20+max/a,0,20+max/a,16), width=4, fill=(255,0,0))
+		if k < 7000:
+			draw.text((100-(k/4), 0), "BeagleBoard.org - Personally affordable open hardware computers for educators and makers of mobile/aerospace robots, 3D printers, home automation, security and more.......  Join the community and learn to program your world..........  - beagleboard.org/mfba2014 - Let's hear it for BeagleBoard.org and we'll measure your applause!", font=font_sm, fill=(222,114,36))
 		else:
-			draw.text((20-j, 0), "BeagleBoard.org - Personally affordable open hardware computers for educators and makers of mobile/aerospace robots, 3D printers, home automation, security and more.......  Join the community and learn to program your world..........  Let's hear it for BeagleBoard.org and we'll measure your applause!", font=font_sm, fill=(222,114,36))
+			draw.line((160,8,160-rms/a,8), width=14, fill=(0,0,255))
+			draw.line((160-max/a,0,160-max/a,16), width=4, fill=rainbow(i))
+			draw.text((1,0), str(max/max_ratio), font=font_sm, fill=(0,255,0))
 		sock.sendto(chr(1) + im.tostring(), dest)
 		if i % 10 == 0:
 			j = j + 1
-		if j > 65536:
+		if j > 65535:
 			j = 0
-
+		if k > 10000:
+			k = 0
+		else:
+			k = k + 1
